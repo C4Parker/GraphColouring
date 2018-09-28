@@ -17,6 +17,6 @@ constraint forall(x,y in size)(adjacency[x,y] == adjacency[y,x]); % Ensures adja
 constraint forall(x,y in size)
                  (adjacency[x,y] -> graph[x] != graph[y]); % No vertex colour can be same as any adjacent colours
 
-output ["Colours = ", show(graph), "\nAdjacency = ", show(adjacency)];
+%output ["Colours = ", show(graph)]; %, "\nAdjacency = ", show(adjacency)];
 
 solve satisfy;
