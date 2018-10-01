@@ -1,7 +1,12 @@
 import java.io.*;
 import java.util.*;
+/**
+*   Reads in DIMACS graph instance file and converts into
+*   MiniZinc data file with its size and adjacency matrix.
+**/
 
-public class Converter {
+
+public class DIMACS2dzn {
         
     public static void main(String args[]) throws IOException{
         String inputFilename = args[0];
@@ -51,14 +56,16 @@ public class Converter {
         try{
         File target = new File(targetFilename);
         if(target.exists()){
-            System.out.println("File with target name already exists, overwrite? (y/n)");
             Scanner userInput = new Scanner(System.in);
-            String command = userInput.nextLine().toLowerCase();
+            String command = "";
+            while(!command.equals("y") && !command.equals("yes")){
+            System.out.println("File with target name already exists, overwrite? (y/n)");
+            command = userInput.nextLine().toLowerCase();
             if(command.equals("no") || command.equals("n")){
                 System.out.println("Exiting program.");
                 return;
             }
-            System.out.println("Continuing...");
+            }
         } else {
             
         }
@@ -77,7 +84,6 @@ public class Converter {
             System.out.println("No such target");
         }
         System.out.println("Finished");
-        // TODO write these in minizinc syntax to target file
         
         
     }

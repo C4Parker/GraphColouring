@@ -1,0 +1,10 @@
+% Data file generated from easy3col DIMACS file
+vertices = 7;
+
+adjacency = [|false,true,false,false,false,false,true,|
+true,false,true,false,false,false,true,|
+false,true,false,true,false,false,true,|
+false,false,true,false,true,false,true,|
+false,false,false,true,false,true,false,|
+false,false,false,false,true,false,true,|
+true,true,true,true,false,true,false,|];
