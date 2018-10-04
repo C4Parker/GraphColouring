@@ -45,23 +45,24 @@ public class Backtracker {
                 if(adjacency[i][j])
                     adjacency[j][i] = true;
         
-        ArrayList<String> colours = new ArrayList<String>();
-        colours.add("red");
-        colours.add("green");
-        colours.add("blue");
-        ArrayList<ArrayList<String>> vertices = new ArrayList<ArrayList<String>>(size);
-        for (int i = 0; i < size; i++)
-            vertices.add(colours);
-        
-        
-        
-        for (int i = 0; i < size; i++)
-            System.out.println(vertices.get(i));
-        
         
     }
     
-    public boolean search(ArrayList<ArrayList<String>> domain, boolean[][] adjacencyMatrix){
+	
+	// Needs testing for correct usage/function!
+	int k = 3;
+	ArrayList<Node> domain = new ArrayList<Node>(size);
+	ArrayList<String> colours = new ArrayList<String>(k);
+	for(int i = 0; i < k; i++)
+		colours.insert(Integer.toString(i+1));
+	for(int i = 0; i < size; i++){
+		Node n = new Node();
+		n.vertex = i;
+		n.availableColours = colours;
+		domain.insert(n);
+	}
+	
+    public boolean search(ArrayList<Node> domain, boolean[][] adjacencyMatrix){
         if(domain.isEmpty())
             return true;
         for(ArrayList<String> d : domain){
@@ -80,6 +81,10 @@ public class Backtracker {
     }
 }
 
+class Node{
+	public int vertex;
+	public ArrayList<String> availableColours;
+}
 
 
 
