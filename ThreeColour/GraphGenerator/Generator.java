@@ -16,11 +16,12 @@ public class Generator{
         
         int edges = 0;
         for(int i = 0; i < size; i++){
-            for(int j = 0; j < i; j++){
+            for(int j = i+1; j < size; j++){
                 adjacencyMatrix[i][j] = (Math.random() < probability);
                 edges++;
             }
         }
+
         
          try{
         File target = new File(targetFilename);
@@ -28,23 +29,21 @@ public class Generator{
             Scanner userInput = new Scanner(System.in);
             String command = "";
             while(!command.equals("y") && !command.equals("yes")){
-            System.out.println("File with target name already exists, overwrite? (y/n)");
-            command = userInput.nextLine().toLowerCase();
-            if(command.equals("no") || command.equals("n")){
-                System.out.println("Exiting program.");
-                return;
+                System.out.println("File with target name already exists, overwrite? (y/n)");
+                command = userInput.nextLine().toLowerCase();
+                if(command.equals("no") || command.equals("n")){
+                    System.out.println("Exiting program.");
+                    return;
+                }
             }
-            }
-        } else {
-            
         }
         FileWriter writer = new FileWriter(targetFilename);
         writer.write("c File: "+targetFilename+"\nc\nc Description: Random graph of size "+size+" vertices and P("+probability+") of edges between any two vertices.\n");
-        writer.write("p col "+size+" "+edges+"\n");
+        writer.write("p col "+size+" "+edges);
         for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++)
+            for(int j = i; j < size; j++)
                 if(adjacencyMatrix[i][j])
-                    writer.write("e "+i+" "+j+"\n");
+                    writer.write("\ne "+(i+1)+" "+(j+1));
         }
         writer.close();
         }catch(Exception ex){
