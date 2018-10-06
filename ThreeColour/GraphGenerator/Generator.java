@@ -40,7 +40,7 @@ public class Generator{
         }
         FileWriter writer = new FileWriter(targetFilename);
         writer.write("c File: "+targetFilename+"\nc\nc Description: Random graph of size "+size+" vertices and P("+probability+") of edges between any two vertices.\n");
-        writer.write("p "+size+" "+edges+"\n");
+        writer.write("p col "+size+" "+edges+"\n");
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++)
                 if(adjacencyMatrix[i][j])
