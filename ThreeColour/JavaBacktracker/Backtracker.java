@@ -1,18 +1,20 @@
 import java.io.*;
 import java.util.*;
+
 /**
 *   Takes DIMACS file as command line argument, determines whether
 *   the graph can be coloured with 3 colours.
 **/
 public class Backtracker {
+    // Initialise default values for graph
+    static int size = -1;
+    static boolean adjacency[][] = new boolean[1][1];
     
     public static void main(String args[]) throws IOException{
         
         String inputFilename = args[0];
         
-        // Initialise default values for graph
-        int size = -1;
-        boolean adjacency[][] = new boolean[1][1];
+        
         
         // Read in data from file
         try{
@@ -32,7 +34,7 @@ public class Backtracker {
                 }
                 line = in.nextLine();
             }
-            
+            System.out.println(line);
         in.close();
         }catch(Exception ex){}
         
@@ -59,30 +61,34 @@ public class Backtracker {
             n.colour = null;
             domain.add(n);
         }
-        System.out.println(search(domain, adjacency));
+        
+        long startTime = java.lang.System.currentTimeMillis();
+        System.out.println(search(domain));
+        long endTime = java.lang.System.currentTimeMillis();
+        System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
         
     }
     
-    public static boolean search(ArrayList<Node> domain, boolean[][] adjacencyMatrix){
-        if(domain.size() == 0)
+    public static boolean search(ArrayList<Node> domain){
+        if(domain.isEmpty())
             return true;
+        
         //choose some node in domain
         Node d = domain.get(0);
-        
         for(String colour : d.availableColours){
-            ArrayList<Node> newDomain = new ArrayList<Node>(domain.size());
+            ArrayList<Node> newDomain = new ArrayList<Node>(domain.size()-1);
             for(Node n : domain){
                 if(n.vertex != d.vertex)
                     newDomain.add(n);
             }
-            for(Node n : domain){
-                if(adjacencyMatrix[n.vertex][d.vertex]){
+            for(Node n : newDomain){
+                if(adjacency[n.vertex][d.vertex]){
                     n.availableColours.remove(colour);
                     if(n.availableColours.isEmpty())
                         break;
                 }
             }
-            return search(newDomain, adjacencyMatrix);
+            return search(newDomain);
         }
         return false;
     }
