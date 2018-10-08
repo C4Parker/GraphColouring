@@ -3,7 +3,8 @@ import java.util.*;
 
 /**
 *   Takes DIMACS file as command line argument, determines whether
-*   the graph can be coloured with 3 colours.
+*   the graph can be coloured with k colours.
+*   Command line arguments: <DIMACS file location> <k-colours>
 **/
 public class Backtracker {
     // Initialise default values for graph
@@ -49,6 +50,11 @@ public class Backtracker {
                     adjacency[j][i] = true;
         
         int k = 3; // number of colours
+        try{
+            k = Integer.parseInt(args[1]);
+        } catch(Exception e) {
+            System.out.println("k-colours not specified, testing graph for default 3 colouring.");
+        }
         ArrayList<Node> domain = new ArrayList<Node>(size);
         
         for(int i = 0; i < size; i++){
