@@ -64,7 +64,7 @@ public class Backtracker {
             Node n = new Node();
             n.vertex = i;
             n.availableColours = colours;
-            n.colour = null;
+            //n.colour = null;
             domain.add(n);
         }
         
@@ -81,20 +81,24 @@ public class Backtracker {
         
         //choose some node in domain
         Node d = domain.get(0);
+        
+       colourD:
         for(String colour : d.availableColours){
-            ArrayList<Node> newDomain = new ArrayList<Node>(domain.size()-1);
+            //System.out.println("c: "+colour +"\td: "+d.vertex);
+            ArrayList<Node> newDomain = new ArrayList<Node>();
             for(Node n : domain){
                 if(n.vertex != d.vertex)
-                    newDomain.add(n);
+                    newDomain.add(n.clone());
             }
             for(Node n : newDomain){
                 if(adjacency[n.vertex][d.vertex]){
                     n.availableColours.remove(colour);
                     if(n.availableColours.isEmpty())
-                        break;
+                        continue colourD;
                 }
             }
-            return search(newDomain);
+            if(search(newDomain))
+                return true;
         }
         return false;
     }
@@ -103,7 +107,19 @@ public class Backtracker {
 class Node{
 	public int vertex;
 	public ArrayList<String> availableColours;
-    public String colour;
+    //public String colour;
+    
+    @Override
+    public Node clone(){
+        Node clone = new Node();
+        clone.vertex = this.vertex;
+        clone.availableColours = new ArrayList<String>();
+        for(String c : this.availableColours)
+            clone.availableColours.add(c);
+        
+        return clone;
+    }
+    
 }
 
 
