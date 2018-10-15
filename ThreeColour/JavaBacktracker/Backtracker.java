@@ -53,10 +53,11 @@ public class Backtracker {
         try{
             k = Integer.parseInt(args[1]);
         } catch(Exception e) {
-            System.out.println("k-colours not specified, testing graph for default 3 colouring.");
+            System.out.println("k-colours not specified, testing graph for 3 colouring.");
         }
-        ArrayList<Node> domain = new ArrayList<Node>(size);
         
+        
+        ArrayList<Node> domain = new ArrayList<Node>(size);
         for(int i = 0; i < size; i++){
             ArrayList<String> colours = new ArrayList<String>(k);
             for(int j = 0; j < k; j++)
@@ -67,15 +68,18 @@ public class Backtracker {
             //n.colour = null;
             domain.add(n);
         }
+        Stack<String> colouring = new Stack<String>();
         
         long startTime = java.lang.System.currentTimeMillis();
-        System.out.println(search(domain));
+        System.out.println(search(domain, colouring));
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
+        for(String s : colouring)
+            System.out.print(s + "\t");
         
     }
     
-    public static boolean search(ArrayList<Node> domain){
+    public static boolean search(ArrayList<Node> domain, Stack<String> colouring){
         if(domain.isEmpty())
             return true;
         
@@ -97,8 +101,11 @@ public class Backtracker {
                         continue colourD;
                 }
             }
-            if(search(newDomain))
+            if(search(newDomain, colouring)){
+                String s = d.vertex + "\t" + colour;
+                colouring.push(s);
                 return true;
+            }
         }
         return false;
     }
