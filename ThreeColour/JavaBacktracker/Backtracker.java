@@ -96,6 +96,18 @@ public class Backtracker {
         
         //choose some node in domain
         Node d = domain.get(0);
+        int dVertex = d.vertex;
+        int dColours = d.availableColours.size();
+        for(Node n : domain){
+            int nColours = n.availableColours.size();
+            if (nColours < dColours){
+                d = n;
+                dVertex = n.vertex;
+                dColours = n.availableColours.size();
+            }
+            if(nColours == 1)
+                break;
+        }
         
        colourD:
         for(String colour : d.availableColours){
