@@ -49,33 +49,44 @@ public class Backtracker {
                 if(adjacency[i][j])
                     adjacency[j][i] = true;
         
-        int k = 3; // number of colours
+        /*int k = 3; // number of colours
         try{
             k = Integer.parseInt(args[1]);
         } catch(Exception e) {
             System.out.println("k-colours not specified, testing graph for 3 colouring.");
-        }
+        }*/
         
         
-        ArrayList<Node> domain = new ArrayList<Node>(size);
-        for(int i = 0; i < size; i++){
-            ArrayList<String> colours = new ArrayList<String>(k);
-            for(int j = 0; j < k; j++)
-                colours.add(Integer.toString(j+1));
-            Node n = new Node();
-            n.vertex = i;
-            n.availableColours = colours;
-            //n.colour = null;
-            domain.add(n);
-        }
+        
         Stack<String> colouring = new Stack<String>();
+        boolean chromaticNumerFound = false;
         
         long startTime = java.lang.System.currentTimeMillis();
-        System.out.println(search(domain, colouring));
+        
+        
+        for(int k = 1; k < size && !chromaticNumerFound; k++){
+            ArrayList<Node> domain = new ArrayList<Node>(size);
+            for(int i = 0; i < size; i++){
+                ArrayList<String> colours = new ArrayList<String>(k);
+                for(int j = 0; j < k; j++)
+                    colours.add(Integer.toString(j+1));
+                Node n = new Node();
+                n.vertex = i;
+                n.availableColours = colours;
+                //n.colour = null;
+                domain.add(n);
+            }
+            
+            chromaticNumerFound = search(domain, colouring);
+            if(chromaticNumerFound)
+                System.out.println("Chromatic number found: " + k);
+        }
+        //System.out.println(search(domain, colouring));
+        
+        
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
-        for(String s : colouring)
-            System.out.print(s + "\t");
+        
         
     }
     
@@ -88,7 +99,6 @@ public class Backtracker {
         
        colourD:
         for(String colour : d.availableColours){
-            //System.out.println("c: "+colour +"\td: "+d.vertex);
             ArrayList<Node> newDomain = new ArrayList<Node>();
             for(Node n : domain){
                 if(n.vertex != d.vertex)
@@ -102,7 +112,7 @@ public class Backtracker {
                 }
             }
             if(search(newDomain, colouring)){
-                String s = d.vertex + "\t" + colour;
+                String s = "(" + d.vertex + " : " + colour + ")";
                 colouring.push(s);
                 return true;
             }
