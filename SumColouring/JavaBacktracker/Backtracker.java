@@ -58,9 +58,9 @@ public class Backtracker {
         for(int k = 1; k < size && !chromaticNumerFound; k++){
             ArrayList<Node> domain = new ArrayList<Node>(size);
             for(int i = 0; i < size; i++){
-                ArrayList<String> colours = new ArrayList<String>(k);
+                ArrayList<Integer> colours = new ArrayList<Integer>(k);
                 for(int j = 0; j < k; j++)
-                    colours.add(Integer.toString(j+1));
+                    colours.add(j+1);
                 Node n = new Node();
                 n.vertex = i;
                 n.availableColours = colours;
@@ -81,7 +81,7 @@ public class Backtracker {
         
         int sum = 0;
         for(Node n : colouring)
-            sum += Integer.parseInt(n.colour);
+            sum += n.colour;
         System.out.println("Sum: "+sum);
         
         
@@ -107,7 +107,7 @@ public class Backtracker {
         }
         
        colourD:
-        for(String colour : d.availableColours){
+        for(int colour : d.availableColours){
             ArrayList<Node> newDomain = new ArrayList<Node>();
             for(Node n : domain){
                 if(n.vertex != d.vertex)
@@ -115,7 +115,7 @@ public class Backtracker {
             }
             for(Node n : newDomain){
                 if(adjacency[n.vertex][d.vertex]){
-                    n.availableColours.remove(colour);
+                    n.availableColours.remove(Integer.valueOf(colour));
                     if(n.availableColours.isEmpty())
                         continue colourD;
                 }
@@ -133,15 +133,15 @@ public class Backtracker {
 
 class Node{
 	public int vertex;
-	public ArrayList<String> availableColours;
-    public String colour;
+	public ArrayList<Integer> availableColours;
+    public Integer colour;
     
     @Override
     public Node clone(){
         Node clone = new Node();
         clone.vertex = this.vertex;
-        clone.availableColours = new ArrayList<String>();
-        for(String c : this.availableColours)
+        clone.availableColours = new ArrayList<Integer>();
+        for(int c : this.availableColours)
             clone.availableColours.add(c);
         
         return clone;
