@@ -47,18 +47,9 @@ public class Backtracker {
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
                 if(adjacency[i][j])
-                    adjacency[j][i] = true;
+                    adjacency[j][i] = true;     
         
-        /*int k = 3; // number of colours
-        try{
-            k = Integer.parseInt(args[1]);
-        } catch(Exception e) {
-            System.out.println("k-colours not specified, testing graph for 3 colouring.");
-        }*/
-        
-        
-        
-        Stack<String> colouring = new Stack<String>();
+        Stack<Node> colouring = new Stack<Node>();
         boolean chromaticNumerFound = false;
         
         long startTime = java.lang.System.currentTimeMillis();
@@ -73,7 +64,7 @@ public class Backtracker {
                 Node n = new Node();
                 n.vertex = i;
                 n.availableColours = colours;
-                //n.colour = null;
+                n.colour = null;
                 domain.add(n);
             }
             
@@ -88,9 +79,15 @@ public class Backtracker {
         System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
         
         
+        int sum = 0;
+        for(Node n : colouring)
+            sum += Integer.parseInt(n.colour);
+        System.out.println("Sum: "+sum);
+        
+        
     }
     
-    public static boolean search(ArrayList<Node> domain, Stack<String> colouring){
+    public static boolean search(ArrayList<Node> domain, Stack<Node> colouring){
         if(domain.isEmpty())
             return true;
         
@@ -124,8 +121,9 @@ public class Backtracker {
                 }
             }
             if(search(newDomain, colouring)){
-                String s = "(" + d.vertex + " : " + colour + ")";
-                colouring.push(s);
+                d.colour = colour;
+                //String s = "(" + d.vertex + " : " + colour + ")";
+                colouring.push(d);
                 return true;
             }
         }
@@ -136,7 +134,7 @@ public class Backtracker {
 class Node{
 	public int vertex;
 	public ArrayList<String> availableColours;
-    //public String colour;
+    public String colour;
     
     @Override
     public Node clone(){
