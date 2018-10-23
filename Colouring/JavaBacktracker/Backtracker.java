@@ -63,7 +63,6 @@ public class Backtracker {
         
         long startTime = java.lang.System.currentTimeMillis();
         
-        
         for(int k = 1; k < size && !chromaticNumerFound; k++){
             ArrayList<Node> domain = new ArrayList<Node>(size);
             for(int i = 0; i < size; i++){
@@ -78,11 +77,12 @@ public class Backtracker {
                     if(adjacency[i][j])
                         nOrder++;
                 n.order = nOrder;
+                n.uncolouredOrder = nOrder;
                 //n.colour = null;
                 domain.add(n);
             }
             
-            chromaticNumerFound = searchDSATUR(domain, colouring);
+            chromaticNumerFound = search(domain, colouring);
             if(chromaticNumerFound)
                 System.out.println("Chromatic number found: " + k);
         }
@@ -148,18 +148,13 @@ public class Backtracker {
         int maxOrder = 1;
         for(Node n : domain){
             int nColours = n.availableColours.size();
-            if (nColours < dColours){
+            if (nColours <= dColours){
+                if(nColours == dColours && n.order > maxOrder)
+                    maxOrder = n.order;
                 d = n;
                 dVertex = n.vertex;
                 dColours = n.availableColours.size();
             }
-            if (nColours == dColours)
-                if(n.order > maxOrder){
-                    maxOrder = n.order;
-                    d = n;
-                    dVertex = n.vertex;
-                    dColours = n.availableColours.size();
-                }
         }
         
        colourD:
@@ -176,7 +171,50 @@ public class Backtracker {
                         continue colourD;
                 }
             }
-            if(search(newDomain, colouring)){
+            if(searchDSATUR(newDomain, colouring)){
+                String s = "(" + d.vertex + " : " + colour + ")";
+                colouring.push(s);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean searchDSATUROptimised(ArrayList<Node> domain, Stack<String> colouring){
+        if(domain.isEmpty())
+            return true;
+        
+        Node d = domain.get(0);
+        int dVertex = d.vertex;
+        int dColours = d.availableColours.size();
+        int maxOrder = 1;
+        for(Node n : domain){
+            int nColours = n.availableColours.size();
+            if (nColours <= dColours){
+                if(nColours == dColours && n.uncolouredOrder > maxOrder)
+                    maxOrder = n.uncolouredOrder;
+                d = n;
+                dVertex = n.vertex;
+                dColours = n.availableColours.size();
+            }
+        }
+        
+       colourD:
+        for(String colour : d.availableColours){
+            ArrayList<Node> newDomain = new ArrayList<Node>();
+            for(Node n : domain){
+                if(n.vertex != d.vertex)
+                    newDomain.add(n.clone());
+            }
+            for(Node n : newDomain){
+                if(adjacency[n.vertex][d.vertex]){
+                    n.availableColours.remove(colour);
+                    if(n.availableColours.isEmpty())
+                        continue colourD;
+                    n.uncolouredOrder--;
+                }
+            }
+            if(searchDSATUROptimised(newDomain, colouring)){
                 String s = "(" + d.vertex + " : " + colour + ")";
                 colouring.push(s);
                 return true;
@@ -190,6 +228,7 @@ public class Backtracker {
 class Node{
 	public int vertex;
     public int order;
+    public int uncolouredOrder;
 	public ArrayList<String> availableColours;
     //public String colour;
     
@@ -197,6 +236,8 @@ class Node{
     public Node clone(){
         Node clone = new Node();
         clone.vertex = this.vertex;
+        clone.order = this.order;
+        clone.uncolouredOrder = this.uncolouredOrder;
         clone.availableColours = new ArrayList<String>();
         for(String c : this.availableColours)
             clone.availableColours.add(c);
