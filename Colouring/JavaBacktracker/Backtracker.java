@@ -73,11 +73,16 @@ public class Backtracker {
                 Node n = new Node();
                 n.vertex = i;
                 n.availableColours = colours;
+                int nOrder = 0;
+                for(int j = 0; j < size; j++)
+                    if(adjacency[i][j])
+                        nOrder++;
+                n.order = nOrder;
                 //n.colour = null;
                 domain.add(n);
             }
             
-            chromaticNumerFound = search(domain, colouring);
+            chromaticNumerFound = searchDSATUR(domain, colouring);
             if(chromaticNumerFound)
                 System.out.println("Chromatic number found: " + k);
         }
@@ -131,10 +136,60 @@ public class Backtracker {
         }
         return false;
     }
+    
+    public static boolean searchDSATUR(ArrayList<Node> domain, Stack<String> colouring){
+        if(domain.isEmpty())
+            return true;
+        
+        //choose some initial node in domain
+        Node d = domain.get(0);
+        int dVertex = d.vertex;
+        int dColours = d.availableColours.size();
+        int maxOrder = 1;
+        for(Node n : domain){
+            int nColours = n.availableColours.size();
+            if (nColours < dColours){
+                d = n;
+                dVertex = n.vertex;
+                dColours = n.availableColours.size();
+            }
+            if (nColours == dColours)
+                if(n.order > maxOrder){
+                    maxOrder = n.order;
+                    d = n;
+                    dVertex = n.vertex;
+                    dColours = n.availableColours.size();
+                }
+        }
+        
+       colourD:
+        for(String colour : d.availableColours){
+            ArrayList<Node> newDomain = new ArrayList<Node>();
+            for(Node n : domain){
+                if(n.vertex != d.vertex)
+                    newDomain.add(n.clone());
+            }
+            for(Node n : newDomain){
+                if(adjacency[n.vertex][d.vertex]){
+                    n.availableColours.remove(colour);
+                    if(n.availableColours.isEmpty())
+                        continue colourD;
+                }
+            }
+            if(search(newDomain, colouring)){
+                String s = "(" + d.vertex + " : " + colour + ")";
+                colouring.push(s);
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }
 
 class Node{
 	public int vertex;
+    public int order;
 	public ArrayList<String> availableColours;
     //public String colour;
     
