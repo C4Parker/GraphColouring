@@ -49,25 +49,30 @@ public class Backtracker {
                 if(adjacency[i][j])
                     adjacency[j][i] = true;
         
-        /*int k = 3; // number of colours
-        try{
-            k = Integer.parseInt(args[1]);
-        } catch(Exception e) {
-            System.out.println("k-colours not specified, testing graph for 3 colouring.");
-        }*/
+        int maxOrder = 1;
+        for(int i = 0; i < size; i++){
+            int iOrder = 0;
+            for(int j = 0; j < size; j++)
+                if(adjacency[i][j])
+                    iOrder++;
+            if(iOrder > maxOrder)
+                maxOrder = iOrder;
+        }
         
         
         
         Stack<String> colouring = new Stack<String>();
-        boolean chromaticNumerFound = false;
+        boolean isColourable = true;
         
         long startTime = java.lang.System.currentTimeMillis();
-        
-        for(int k = 1; k < size && !chromaticNumerFound; k++){
+        int currentColouring = maxOrder;
+        while(isColourable){
+            
+            // Builds new domain of size k
             ArrayList<Node> domain = new ArrayList<Node>(size);
             for(int i = 0; i < size; i++){
-                ArrayList<String> colours = new ArrayList<String>(k);
-                for(int j = 0; j < k; j++)
+                ArrayList<String> colours = new ArrayList<String>(currentColouring);
+                for(int j = 0; j < currentColouring; j++)
                     colours.add(Integer.toString(j+1));
                 Node n = new Node();
                 n.vertex = i;
@@ -82,9 +87,10 @@ public class Backtracker {
                 domain.add(n);
             }
             
-            chromaticNumerFound = search(domain, colouring);
-            if(chromaticNumerFound)
-                System.out.println("Chromatic number found: " + k);
+            isColourable = search(domain, colouring);
+            if(isColourable)
+                System.out.println(currentColouring + " colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
+            currentColouring--;
         }
         //System.out.println(search(domain, colouring));
         
@@ -98,8 +104,10 @@ public class Backtracker {
     public static boolean search(ArrayList<Node> domain, Stack<String> colouring){
         if(domain.isEmpty())
             return true;
-        
-        //choose some node in domain
+
+        // chooses vertex with minimum available colours
+        // no tiebreaking
+        // first vertex found with only one available colour is coloured
         Node d = domain.get(0);
         int dVertex = d.vertex;
         int dColours = d.availableColours.size();
@@ -141,7 +149,9 @@ public class Backtracker {
         if(domain.isEmpty())
             return true;
         
-        //choose some initial node in domain
+        // chooses vertex with minimum available colours
+        // tiebreaking on vertex cardinality
+        // first vertex found with only one available colour is coloured
         Node d = domain.get(0);
         int dVertex = d.vertex;
         int dColours = d.availableColours.size();
@@ -155,6 +165,8 @@ public class Backtracker {
                 dVertex = n.vertex;
                 dColours = n.availableColours.size();
             }
+            if(nColours == 1)
+                break;
         }
         
        colourD:
@@ -183,7 +195,10 @@ public class Backtracker {
     public static boolean searchDSATUROptimised(ArrayList<Node> domain, Stack<String> colouring){
         if(domain.isEmpty())
             return true;
-        
+                
+        // chooses vertex with minimum available colours
+        // tiebreaking on vertex uncoloured/affected cardinality
+        // first vertex found with only one available colour is coloured
         Node d = domain.get(0);
         int dVertex = d.vertex;
         int dColours = d.availableColours.size();
@@ -197,6 +212,8 @@ public class Backtracker {
                 dVertex = n.vertex;
                 dColours = n.availableColours.size();
             }
+            if(nColours == 1)
+                break;
         }
         
        colourD:
