@@ -1,4 +1,4 @@
-set of int: DOMAIN = size;% = to_enum(size);%{1..vertices};
+set of int: DOMAIN = 1..40;% = to_enum(size);%{1..vertices};
 
 int: vertices; % Number of vertices in graph
 array[size,size] of bool : adjacency;  % Adjacency matrix for graph
@@ -13,4 +13,5 @@ constraint cost = sum(graph);
 
 output ["Colours = ", show(graph), "\nCost = ", show(cost)];
 
-solve minimize(cost);
+solve :: int_search(DOMAIN, smallest, indomain_min, complete)
+      minimize(cost);

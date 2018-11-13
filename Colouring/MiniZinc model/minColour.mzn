@@ -15,4 +15,5 @@ constraint maximum(numColours, graph);
 
 output ["Colours = ", show(graph), "\n", show(numColours)];
 
-solve minimize(numColours);
+solve :: int_search(DOMAIN, smallest, indomain_min, complete)
+         minimize(numColours);
