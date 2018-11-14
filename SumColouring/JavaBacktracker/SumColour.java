@@ -68,14 +68,11 @@ public class SumColour {
         boolean isColourable = true;
         int bestSum = Integer.MAX_VALUE;
         Stack<Node> colouring = new Stack<Node>();
-        Stack<Node> bestColouring = new Stack<Node>();
-        int k = maxOrder;
+        int k = 50;         // This parameter must be tuned
+        //System.out.println(maxOrder);
         
-        //int targetSum = size * 4 ;
-        
-        
-        while(isColourable){//} && bestSum >= targetSum){
-            // Initialise domain of size k (maxOrder..1)
+        while(isColourable){
+            // Initialise domain of size k
             ArrayList<Node> domain = new ArrayList<Node>(size);
             for(int i = 0; i < size; i++){
                 ArrayList<Integer> colours = new ArrayList<Integer>(k);
@@ -94,24 +91,17 @@ public class SumColour {
                 domain.add(n);
             }
             
-            isColourable = search(domain, colouring, bestSum, 0); // Use bestSum somehow so we can iterate and find better colourings rather than stopping once we find one colouring
+            // Use bestSum somehow so we can iterate and find better colourings rather than stopping once we find one colouring
+            isColourable = search(domain, colouring, bestSum, 0); 
             int sum = 0;
             for(Node n : colouring)
                 sum += n.colour;
-            if(sum <= bestSum){
+            if(sum <= bestSum)
                 bestSum = sum;
-                bestColouring.clear();
-                while(!colouring.isEmpty())
-                    bestColouring.push(colouring.pop());
-            }
             colouring.clear(); // Reset stack
             if(isColourable)
                 System.out.println(sum + " cost colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
         }
-        int sum = 0;
-        for(Node n : colouring)
-            sum += n.colour;
-        System.out.println("Sum: "+sum);
         
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
@@ -129,27 +119,9 @@ public class SumColour {
         if(domain.size() + sum >= bestSum)
             return false;
         
-        // chooses vertex with minimum available colours
-        // tiebreaking on vertex cardinality
-        // first vertex found with only one available colour is coloured
-        Node d = domain.get(0);
-        int dVertex = d.vertex;
-        int dColours = d.availableColours.size();
-        int maxOrder = 1;
-        for(Node n : domain){
-            int nColours = n.availableColours.size();
-            if (nColours <= dColours){
-                if(nColours == dColours && n.order > maxOrder)
-                    maxOrder = n.order;
-                d = n;
-                dVertex = n.vertex;
-                dColours = n.availableColours.size();
-            }
-            if(nColours == 1)
-                break;
-        }
-        
-       colourD:
+        Node d = pickNode(domain);
+                
+        colourD:
         for(int colour : d.availableColours){
             ArrayList<Node> newDomain = new ArrayList<Node>();
             for(Node n : domain){
@@ -171,35 +143,29 @@ public class SumColour {
         }
         return false;
     }
-}
-
-class Node{
-	public int vertex;
-    public int order;
-	public ArrayList<Integer> availableColours;
-    public Integer colour;
     
-    /*public Node(int vertex, int order, ArrayList<Integer> availableColours, Integer colour){
-        this.vertex = vertex;
-        this.order = order;
-        this.availableColours = availableColours;
-        this.colour = colour;
+    public static Node pickNode(ArrayList<Node> domain){
+        // chooses vertex with minimum available colours
+        // tiebreaking on vertex cardinality(max wins)
+        // first vertex found with only one available colour is coloured
+        Node d = domain.get(0);
+        int dVertex = d.vertex;
+        int dColours = d.availableColours.size();
+        int maxOrder = 1;
+        for(Node n : domain){
+            int nColours = n.availableColours.size();
+            if (nColours <= dColours){
+                if(nColours == dColours && n.order > maxOrder)
+                    maxOrder = n.order;
+                d = n;
+                dVertex = n.vertex;
+                dColours = n.availableColours.size();
+            }
+            if(nColours == 1)
+                break;
+        }
+        return d;
     }
-    public Node(){
-    }*/
-    
-    @Override
-    public Node clone(){
-        Node clone = new Node();
-        clone.vertex = this.vertex;
-        clone.order = this.order;
-        clone.availableColours = new ArrayList<Integer>();
-        for(int c : this.availableColours)
-            clone.availableColours.add(c);
-        
-        return clone;
-    }
-    
 }
 
 

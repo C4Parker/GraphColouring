@@ -2,8 +2,7 @@ import java.io.*;
 import java.util.*;
 
 /**
-*   Takes DIMACS file as command line argument, determines whether
-*   the graph can be coloured with k colours.
+*   Sum colours graph G by finding large independent sets within the graph
 *   Command line arguments: <DIMACS file location>
 **/
 public class ISSum {
@@ -76,16 +75,16 @@ public class ISSum {
         
         int sum = search(domain, colouring, 0);
         
-        System.out.println(sum);
-        
+        //System.out.println(sum);
+        int colours = 0;
+        for(Node n : colouring)
+            if(n.colour > colours)
+                colours = n.colour;
+            
+        System.out.println("Colours: " + colours + "\tSum: " + sum);
         
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
-        
-        
-        
-        
-        
     }
     
     public static int search(ArrayList<Node> domain, Stack<Node> colouring, int numColours){
@@ -139,36 +138,6 @@ public class ISSum {
 	}
 	
 }
-
-class Node{
-	public int vertex;
-    public Integer colour;
-    
-    public Node(int vertex, Integer colour){
-        this.vertex = vertex;
-        this.colour = colour;
-    }
-    public Node(){
-    }
-    
-    /*@Override
-    public Node clone(){
-        Node clone = new Node();
-        clone.vertex = this.vertex;
-        clone.order = this.order;
-        clone.availableColours = new ArrayList<Integer>();
-        for(int c : this.availableColours)
-            clone.availableColours.add(c);
-        
-        return clone;
-    }*/
-    
-}
-
-
-
-
-
 
 
 
