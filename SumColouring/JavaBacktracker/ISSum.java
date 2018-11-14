@@ -68,17 +68,16 @@ public class ISSum {
         boolean isColourable = true;
         int bestSum = Integer.MAX_VALUE;
         Stack<Node> colouring = new Stack<Node>();
-        Stack<Node> bestColouring = new Stack<Node>();
-        int k = maxOrder;
         
-        //int targetSum = size * 4 ;
+        // Initialise domain
+        ArrayList<Node> domain = new ArrayList<Node>();
+        for(int i = 0; i < size; i++)
+            domain.add(new Node(i, null));
         
+        int sum = search(domain, colouring, 0);
         
+        System.out.println(sum);
         
-        int sum = 0;
-        for(Node n : colouring)
-            sum += n.colour;
-        System.out.println("Sum: "+sum);
         
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
@@ -91,27 +90,35 @@ public class ISSum {
     
     public static int search(ArrayList<Node> domain, Stack<Node> colouring, int numColours){
         if(domain.isEmpty())
-            return sum;
+            return calcSum(colouring);
 		// Let H be maximum independent set of G
         ArrayList<Node> maxIS = maxIS(domain);
 		
-		numColours++
+		
 		
 		// Let G' be G \ H
 		// Assign all v in H to next smallest colour
+        numColours++;
 		for(Node n : maxIS){
 			n.colour = numColours;
 			domain.remove(n);
 			colouring.push(n);
 		}
-		search(domain, colouring, numColours)
+		return search(domain, colouring, numColours);
 		
     }
 	
+    public static int calcSum(Stack<Node> colouring){
+        int sum = 0;
+        for(Node n : colouring)
+            sum += n.colour;
+        return sum;
+    }
+    
 	public static ArrayList<Node> maxIS(ArrayList<Node> graph){
 		// Given graph G(V, E)
 		// Let I be an empty set
-		ArrayList<Node> maxIS = new ArrayList<Node>;
+		ArrayList<Node> maxIS = new ArrayList<Node>();
 		// While G is not empty
 		while(!graph.isEmpty()){
 			// Chose a node v in V
@@ -120,10 +127,12 @@ public class ISSum {
 			// Add v to the set I
 			maxIS.add(n);
 			// Remove v and all adjacent vertices from G 
-			graph.remove(n);
+            
+            ArrayList<Node> newGraph = new ArrayList<Node>();
 			for(Node v : graph)
-				if(adjacency[v.vertex][n.vertex])
-					graph.remove(v);
+				if(!adjacency[v.vertex][n.vertex] && v.vertex != n.vertex)
+					newGraph.add(v);
+            graph = newGraph;
 		}
 		// Return I
 		return maxIS;
@@ -133,20 +142,16 @@ public class ISSum {
 
 class Node{
 	public int vertex;
-    public int order;
-	public ArrayList<Integer> availableColours;
     public Integer colour;
     
-    /*public Node(int vertex, int order, ArrayList<Integer> availableColours, Integer colour){
+    public Node(int vertex, Integer colour){
         this.vertex = vertex;
-        this.order = order;
-        this.availableColours = availableColours;
         this.colour = colour;
     }
     public Node(){
-    }*/
+    }
     
-    @Override
+    /*@Override
     public Node clone(){
         Node clone = new Node();
         clone.vertex = this.vertex;
@@ -156,7 +161,7 @@ class Node{
             clone.availableColours.add(c);
         
         return clone;
-    }
+    }*/
     
 }
 
