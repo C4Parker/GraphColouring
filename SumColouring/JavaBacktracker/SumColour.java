@@ -51,13 +51,17 @@ public class SumColour {
             // Use bestSum somehow so we can iterate and find better colourings rather than stopping once we find one colouring
             isColourable = search(domain, colouring, bestSum, 0); 
             int sum = 0;
-            for(Node n : colouring)
+            int kCols = 0;
+            for(Node n : colouring){
                 sum += n.colour;
+                if(n.colour > kCols)
+                    kCols = n.colour;
+            }
             if(sum <= bestSum)
                 bestSum = sum;
             colouring.clear(); // Reset stack
             if(isColourable)
-                System.out.println(sum + " cost colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
+                System.out.println(sum + " cost "+ kCols+ "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
         }
         
         long endTime = java.lang.System.currentTimeMillis();
@@ -76,8 +80,8 @@ public class SumColour {
         if(domain.size() + sum >= bestSum)
             return false;
         
-        Node d = pickNode(domain);
-                
+        //Node d = pickNode(domain);
+        Node d = domain.get(0);        
         colourD:
         for(int colour : d.availableColours){
             ArrayList<Node> newDomain = new ArrayList<Node>();
@@ -102,13 +106,14 @@ public class SumColour {
     }
     
     public static Node pickNode(ArrayList<Node> domain){
+        // DSATUR heuristic
         // chooses vertex with minimum available colours
         // tiebreaking on vertex cardinality(max wins)
         // first vertex found with only one available colour is coloured
         Node d = domain.get(0);
         int dVertex = d.vertex;
         int dColours = d.availableColours.size();
-        int maxOrder = 1;
+        int maxOrder = d.order;
         for(Node n : domain){
             int nColours = n.availableColours.size();
             if (nColours <= dColours){
