@@ -68,6 +68,7 @@ public class ISSum {
         return sum;
     }
     
+    // Returns a maximal independent set
 	public static ArrayList<Node> maxIS(ArrayList<Node> graph){
 		// Given graph G(V, E)
 		// Let I be an empty set
@@ -75,7 +76,7 @@ public class ISSum {
 		// While G is not empty
 		while(!graph.isEmpty()){
 			// Chose a node v in V
-			Node n = graph.get(0);
+			Node n = pickNode(graph);
 			
 			// Add v to the set I
 			maxIS.add(n);
@@ -90,6 +91,21 @@ public class ISSum {
 		// Return I
 		return maxIS;
 	}
+    
+        public static Node pickNode(ArrayList<Node> domain){
+        // chooses vertex with minimum cardinality
+        Node d = domain.get(0);
+        int minOrder = d.order;
+        for(Node n : domain){
+            if (n.order < minOrder){
+                minOrder = n.order;
+                d = n;
+            }
+            if(nOrder <= 1)
+                break;
+        }
+        return d;
+    }
 	
 }
 
