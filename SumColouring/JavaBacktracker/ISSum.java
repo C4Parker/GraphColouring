@@ -101,7 +101,7 @@ public class ISSum {
                 minOrder = n.order;
                 d = n;
             }
-            if(nOrder <= 1)
+            if(n.order <= 1)
                 break;
         }
         return d;
