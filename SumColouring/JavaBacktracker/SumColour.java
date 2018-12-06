@@ -6,7 +6,7 @@ import java.util.*;
 *   the graph can be coloured with k colours.
 *   Command line arguments: <DIMACS file location> <k-colours>
 **/
-public class MultiSum {
+public class SumColour {
     
     // Hacky static declaration
     static boolean adjacency[][];
