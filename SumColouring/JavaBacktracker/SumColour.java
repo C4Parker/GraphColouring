@@ -6,10 +6,11 @@ import java.util.*;
 *   the graph can be coloured with k colours.
 *   Command line arguments: <DIMACS file location> <k-colours>
 **/
-public class SumColour {
+public class MultiSum {
     
     // Hacky static declaration
     static boolean adjacency[][];
+    static long startTime = java.lang.System.currentTimeMillis();
     
     public static void main(String args[]) throws IOException{
         
@@ -19,37 +20,30 @@ public class SumColour {
         adjacency = instance.adjacencyMatrix;
         int size = instance.size;
         
-        long startTime = java.lang.System.currentTimeMillis();
-        
         // preliminary variables
-        boolean isColourable = true;
-        int bestSum = Integer.MAX_VALUE;
+        int k = 7;         // Maximum number of colours to colour graph with
+        
+        // search upper/lower bound sequentially
+        // actual solution would be multithreaded to find bounds in less time
+        searchUpperBound(size, k);
+        searchLowerBound(size, k);
+        
+        long endTime = java.lang.System.currentTimeMillis();
+        System.out.println("Completed in " + timeTaken(startTime));
+        
+    }
+    
+    public static void searchUpperBound(int size, int numColours){
         Stack<Node> colouring = new Stack<Node>();
-        int k = 50;         // This parameter must be tuned
-        //System.out.println(maxOrder);
+        boolean isColourable = true;
+        int target = Integer.MAX_VALUE; // Default value, represents best cost colouring found
         
         while(isColourable){
             // Initialise domain of size k
-            ArrayList<Node> domain = new ArrayList<Node>(size);
-            for(int i = 0; i < size; i++){
-                ArrayList<Integer> colours = new ArrayList<Integer>(k);
-                for(int j = 0; j < k; j++)
-                    colours.add(j+1);
-                Node n = new Node();
-                n.vertex = i;
-                int nOrder = 0;
-                for(int j = 0; j < size; j++)
-                    if(adjacency[i][j])
-                        nOrder++;
-                n.order = nOrder;
-                n.availableColours = colours;
-                n.colour = null;
-                
-                domain.add(n);
-            }
+            ArrayList<Node> domain = initialiseDomain(size, numColours);
             
-            // Use bestSum somehow so we can iterate and find better colourings rather than stopping once we find one colouring
-            isColourable = search(domain, colouring, bestSum, 0); 
+            // Use target as upper bound on new colourings
+            isColourable = search(domain, colouring, target, 0); 
             int sum = 0;
             int kCols = 0;
             for(Node n : colouring){
@@ -57,21 +51,43 @@ public class SumColour {
                 if(n.colour > kCols)
                     kCols = n.colour;
             }
-            if(sum <= bestSum)
-                bestSum = sum;
-            colouring.clear(); // Reset stack
+            if(sum <= target)
+                target = sum;
+            colouring.clear();  // Reset stack
             if(isColourable)
                 System.out.println(sum + " cost "+ kCols+ "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
         }
-        
-        long endTime = java.lang.System.currentTimeMillis();
-        System.out.println("Completed in " + Long.toString(endTime-startTime) + "ms");
-        
-        
-        
-        
-        
     }
+    
+    public static void searchLowerBound(int size, int numColours){   
+    
+        Stack<Node> colouring = new Stack<Node>();
+        boolean targetHit = false;
+        int sum = Integer.MAX_VALUE; // Default value
+        int upperBound = numColours * size / 2; // Represents all evenly sized colour classes, worst case sum colouring
+        
+        
+        for(int target = size; target < upperBound && !targetHit; target++){
+            // Initialise domain of size k
+            ArrayList<Node> domain = initialiseDomain(size, numColours);
+            targetHit = search(domain, colouring, target, 0); 
+            
+            sum = 0;
+            int coloursUsed = 0;
+            for(Node n : colouring){
+                sum += n.colour;
+                if(n.colour > coloursUsed)
+                    coloursUsed = n.colour;
+            }
+            colouring.clear(); // Reset stack
+            
+            if(!targetHit)
+                System.out.println("Optimal cost greater than " + target + "\t" + timeTaken(startTime));
+            if(targetHit)
+                System.out.println(sum + " cost "+ coloursUsed+ "-colouring found in " + timeTaken(startTime));
+        }
+    }
+    
     
     public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum,int sum){
         if(domain.isEmpty())
@@ -80,8 +96,8 @@ public class SumColour {
         if(domain.size() + sum >= bestSum)
             return false;
         
-        //Node d = pickNode(domain);
-        Node d = domain.get(0);        
+        Node d = pickNode(domain);
+        //Node d = domain.get(0);        
         colourD:
         for(int colour : d.availableColours){
             ArrayList<Node> newDomain = new ArrayList<Node>();
@@ -104,6 +120,8 @@ public class SumColour {
         }
         return false;
     }
+    
+
     
     public static Node pickNode(ArrayList<Node> domain){
         // DSATUR heuristic
@@ -128,27 +146,29 @@ public class SumColour {
         }
         return d;
     }
+    
+    public static ArrayList<Node> initialiseDomain(int size, int numColours){
+        ArrayList<Node> domain = new ArrayList<Node>(size);
+        for(int i = 0; i < size; i++){
+            ArrayList<Integer> colours = new ArrayList<Integer>(numColours);
+            for(int j = 0; j < numColours; j++)
+                colours.add(j+1);
+            Node n = new Node();
+            n.vertex = i;
+            int nOrder = 0;
+            for(int j = 0; j < size; j++)
+                if(adjacency[i][j])
+                    nOrder++;
+            n.order = nOrder;
+            n.availableColours = colours;
+            n.colour = null;
+            domain.add(n);
+        }
+        return domain;
+    }
+    
+    public static String timeTaken(long startTime){
+        return (java.lang.System.currentTimeMillis() - startTime) + "ms";
+    }
+    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
