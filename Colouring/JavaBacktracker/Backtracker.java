@@ -87,7 +87,7 @@ public class Backtracker {
                 domain.add(n);
             }
             
-            isColourable = search(domain, colouring);
+            isColourable = search(domain, colouring, 0);
             if(isColourable)
                 System.out.println(currentColouring + " colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
             currentColouring--;
@@ -101,7 +101,7 @@ public class Backtracker {
         
     }
     
-    public static boolean search(ArrayList<Node> domain, Stack<String> colouring){
+    public static boolean search(ArrayList<Node> domain, Stack<String> colouring, int coloursUsed){
         if(domain.isEmpty())
             return true;
 
@@ -124,22 +124,43 @@ public class Backtracker {
         
        colourD:
         for(String colour : d.availableColours){
-            ArrayList<Node> newDomain = new ArrayList<Node>();
-            for(Node n : domain){
-                if(n.vertex != d.vertex)
-                    newDomain.add(n.clone());
-            }
-            for(Node n : newDomain){
-                if(adjacency[n.vertex][d.vertex]){
-                    n.availableColours.remove(colour);
-                    if(n.availableColours.isEmpty())
-                        continue colourD;
+            if(Integer.parseInt(colour) <= coloursUsed) {
+                ArrayList<Node> newDomain = new ArrayList<Node>();
+                for(Node n : domain){
+                    if(n.vertex != d.vertex)
+                        newDomain.add(n.clone());
+                }
+                for(Node n : newDomain){
+                    if(adjacency[n.vertex][d.vertex]){
+                        n.availableColours.remove(colour);
+                        if(n.availableColours.isEmpty())
+                            continue colourD;
+                    }
+                }
+                if(search(newDomain, colouring, coloursUsed)){
+                    String s = "(" + d.vertex + " : " + colour + ")";
+                    colouring.push(s);
+                    return true;
                 }
             }
-            if(search(newDomain, colouring)){
-                String s = "(" + d.vertex + " : " + colour + ")";
-                colouring.push(s);
-                return true;
+            if(Integer.parseInt(colour) == coloursUsed + 1) {
+                ArrayList<Node> newDomain = new ArrayList<Node>();
+                for(Node n : domain){
+                    if(n.vertex != d.vertex)
+                        newDomain.add(n.clone());
+                }
+                for(Node n : newDomain){
+                    if(adjacency[n.vertex][d.vertex]){
+                        n.availableColours.remove(colour);
+                        if(n.availableColours.isEmpty())
+                            continue colourD;
+                    }
+                }
+                if(search(newDomain, colouring, coloursUsed + 1)){
+                    String s = "(" + d.vertex + " : " + colour + ")";
+                    colouring.push(s);
+                    return true;
+                }
             }
         }
         return false;
