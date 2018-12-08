@@ -45,11 +45,11 @@ public class SumColour {
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, target, 0); 
             int sum = 0;
-            int kCols = 0;
+            int coloursUsed = 0;
             for(Node n : colouring){
                 sum += n.colour;
-                if(n.colour > kCols)
-                    kCols = n.colour;
+                if(n.colour > coloursUsed)
+                    coloursUsed = n.colour;
             }
             if(sum <= target)
                 target = sum;
