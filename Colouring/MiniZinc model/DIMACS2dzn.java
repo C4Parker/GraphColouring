@@ -71,7 +71,7 @@ public class DIMACS2dzn {
         }
         FileWriter writer = new FileWriter(targetFilename);
         writer.write("% Data file generated from " + args[0] + " DIMACS file\n");
-        writer.write("vertices = " + size + ";\n\n");
+        writer.write("size = " + size + ";\n\n");
         writer.write("adjacency = [|");
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++)
