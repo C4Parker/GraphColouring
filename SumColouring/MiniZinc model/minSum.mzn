@@ -5,7 +5,7 @@ int: strength = 10; % magic number, upper bound strength of graph
 set of int: DOMAIN = 1..strength;
 
 int: size; % Number of size in graph
-array[1..size,1..size] of bool : adjacency;  % Adjacency matrix for graph
+array[1..size,1..size] of 0..1 : adjacency;  % Adjacency matrix for graph
 
 % set of int: 1..size = 1..size;
 array[1..size] of var DOMAIN: graph; % Coloured size of graph
@@ -15,12 +15,12 @@ array[DOMAIN] of var int: classSizes;
 
 % Standard graph colouring constraint and cost function
 constraint forall(x,y in 1..size)
-                 (adjacency[x,y] -> graph[x] != graph[y]);
+                 (adjacency[x,y] = 1 -> graph[x] != graph[y]);
 constraint cost = sum(graph);
 
 % Maximum weight of vertex is its cardinality + 1
 constraint forall(v in vOrder)
-                 (sum (i in 1..size)((adjacency[v,i] = true)) = v);
+                 (sum (i in 1..size)((adjacency[v,i] = 1)) = v);
 constraint forall(v in graph)(v <= vOrder[v]+1);
 
 

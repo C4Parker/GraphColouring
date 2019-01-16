@@ -14,7 +14,7 @@ public class DIMACS2dzn {
         
         // Initialise default values for graph
         int size = -1;
-        boolean adjacency[][] = new boolean[1][1];
+        int adjacency[][] = new int[1][1];
         
         // Read in data from file
         try{
@@ -26,11 +26,11 @@ public class DIMACS2dzn {
                 String symbols[] = line.split(" ");
                 if(symbols[0].equals("p")){
                     size = Integer.parseInt(symbols[2]);
-                    adjacency = new boolean[size][size];
+                    adjacency = new int[size][size];
                 }else if(symbols[0].equals("e")){
                     int v1 = Integer.parseInt(symbols[1]);
                     int v2 = Integer.parseInt(symbols[2]);
-                    adjacency[v1-1][v2-1] = true;
+                    adjacency[v1-1][v2-1] = 1;
                 }
                 line = in.nextLine();
             }
@@ -42,15 +42,14 @@ public class DIMACS2dzn {
         
         // Remove edges connecting vertex to itself
         for(int i = 0; i < size; i++)
-            adjacency[i][i] = false;
+            adjacency[i][i] = 0;
         
         // Make adjacency matrix symmetric
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
-                if(adjacency[i][j])
-                    adjacency[j][i] = true;
+                if(adjacency[i][j] == 1)
+                    adjacency[j][i] = 1;
         
-        //System.out.println(Arrays.deepToString(adjacency));
         
         
         try{
@@ -76,7 +75,7 @@ public class DIMACS2dzn {
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++)
                 writer.write(adjacency[i][j] + ",");
-            writer.write("|");
+            writer.write("\n|");
         }
         writer.write("];");
         writer.close();
