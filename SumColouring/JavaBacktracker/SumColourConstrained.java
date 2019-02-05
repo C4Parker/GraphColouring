@@ -63,7 +63,7 @@ public class SumColourConstrained {
             return sum < bestSum;
         if(domain.size() + sum >= bestSum)
             return false;
-        Node d = pickNode(domain);
+        Node d = nextDeg(domain);
         
         colourD:
         for(int colour : d.availableColours){
@@ -93,13 +93,21 @@ public class SumColourConstrained {
         return false;
     }
     
-    // Not great heuristic when domain is variable size for each vertex, thinks vertices with enormous order are easy to colour
-    /**
-     * DSATUR heuristic
-     * Chooses vertex(node) with minimum available colours, tiebreaking on vertex degree.
-     * First vertex found with only one available colour is automatically chosen.
-    **/
-    public static Node pickNode(ArrayList<Node> domain){
+
+	public static Node nextDeg(ArrayList<Node> domain){
+        Node d = domain.get(0);
+		for(Node n : domain){
+			if(n.availableColours.size() == 1)
+				return n;
+			if(n.order > d.order)
+				d = n;
+			else if(n.order == d.order && n.availableColours.size() < d.availableColours.size())
+				d = n;
+		}
+		return d;
+	}
+    
+	public static Node nextDSATUR(ArrayList<Node> domain){
         Node d = domain.get(0);
         int dVertex = d.vertex;
         int dColours = d.availableColours.size();
@@ -118,7 +126,11 @@ public class SumColourConstrained {
         }
         return d;
     }
-    
+	
+	public static Node next(ArrayList<Node> domain){
+        return domain.get(0);
+    }
+	
     
     /**
      * Initialise domain of size, with d+1 colours for vertex of degree d
