@@ -21,7 +21,7 @@ public class SumColourConstrained {
         int size = instance.size;
         
         // preliminary variables
-        int k = 5;         // Maximum number of colours to colour graph with
+        int k = 7;         // Maximum number of colours to colour graph with
         
         // search
         search(size, k);
@@ -38,7 +38,7 @@ public class SumColourConstrained {
         
         while(isColourable){
             // Initialise domain of size k
-            ArrayList<Node> domain = initialiseDomain(adjacency);
+            ArrayList<Node> domain = initialiseDomain(adjacency, numColours);
             
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, target, 0, 0); 
@@ -63,7 +63,7 @@ public class SumColourConstrained {
             return sum < bestSum;
         if(domain.size() + sum >= bestSum)
             return false;
-        Node d = pickNode(domain);
+        Node d = pickCheapest(domain);
         
         colourD:
         for(int colour : d.availableColours){
@@ -80,7 +80,6 @@ public class SumColourConstrained {
                             continue colourD;
                     }
                 }
-                //resolveAdjacency(newDomain);
                 if(colour == coloursUsed + 1)
                     coloursUsed++;
                 if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed)){
@@ -93,13 +92,79 @@ public class SumColourConstrained {
         return false;
     }
     
-    // Not great heuristic when domain is variable size for each vertex, thinks vertices with enormous order are easy to colour
     /**
-     * DSATUR heuristic
-     * Chooses vertex(node) with minimum available colours, tiebreaking on vertex degree.
-     * First vertex found with only one available colour is automatically chosen.
+     *
     **/
     public static Node pickNode(ArrayList<Node> domain){
+        Node d = domain.get(0);
+        int dOrder = d.order;
+        int dColours = d.availableColours.size();
+        if(dColours == 1){
+            return d;
+        }
+        
+        //int dColours = d.availableColours.size();
+        //int maxOrder = d.order;
+        for(Node n : domain){
+            int nOrder = n.order;
+            int nColours = n.availableColours.size();
+            if(nColours == 1){
+                d = n;
+                break;
+            }
+            // if n has larger cardinality/affected set OR n has smaller domain and same affected set n is preferable
+            if (nOrder > dOrder || (nOrder == dOrder && nColours < dColours)){
+                d = n;
+                dColours = nColours;
+            }
+        }
+        return d;
+    }
+    
+    /**
+     *  Returns cheapest cost node tiebreaking on domain size and vertex order
+    **/
+    public static Node pickCheapest(ArrayList<Node> domain){
+        Node d = domain.get(0);
+        int dOrder = d.order;
+        int dColours = d.availableColours.size();
+        int dCost = d.availableColours.get(0);
+        if(dColours == 1)
+            return d;
+        
+        for(Node n : domain){
+            int nOrder = n.order;
+            int nColours = n.availableColours.size();
+            int nCost = n.availableColours.get(0);
+            if(nColours == 1)
+                return n;
+            
+            if(nCost < dCost){
+                d = n;
+                dOrder = nOrder;
+                dColours = nColours;
+                dCost = nCost;
+            }
+            
+            // Tiebreaking on domain size and order
+            else if(nCost == dCost){
+                if(nColours < dColours || nOrder < dOrder){
+                    d = n;
+                    dOrder = nOrder;
+                    dColours = nColours;
+                    dCost = nCost;
+                }
+            }
+        }
+        
+        return d;
+    }
+    
+    public static Node pickDSAT(ArrayList<Node> domain){
+        // DSATUR heuristic
+        // chooses vertex with minimum available colours
+        // tiebreaking on vertex cardinality(max wins)
+        // first vertex found with only one available colour is coloured
         Node d = domain.get(0);
         int dVertex = d.vertex;
         int dColours = d.availableColours.size();
@@ -123,7 +188,7 @@ public class SumColourConstrained {
     /**
      * Initialise domain of size, with d+1 colours for vertex of degree d
     **/
-    public static ArrayList<Node> initialiseDomain(boolean[][] adjacency){
+    public static ArrayList<Node> initialiseDomain(boolean[][] adjacency, int k){
         int size = adjacency.length;
         ArrayList<Node> domain = new ArrayList<Node>(size);
         for(int i = 0; i < size; i++){
@@ -136,7 +201,7 @@ public class SumColourConstrained {
                     nOrder++;
             n.order = nOrder;
             
-            ArrayList<Integer> colours = new ArrayList<Integer>(nOrder + 1);
+            ArrayList<Integer> colours = new ArrayList<Integer>(Math.min(nOrder + 1, k));
             for(int j = 1; j <= nOrder + 1; j++)
                 colours.add(j);
             n.availableColours = colours;

@@ -25,15 +25,15 @@ public class SumColour {
         
         // search upper/lower bound sequentially
         // actual solution would be multithreaded to find bounds in less time
-        searchUpperBound(size, k);
-        searchLowerBound(size, k);
+        searchUpper(size, k);
+        //searchLower(size, k);
         
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + timeTaken(startTime));
         
     }
     
-    public static void searchUpperBound(int size, int numColours){
+    public static void searchUpper(int size, int numColours){
         Stack<Node> colouring = new Stack<Node>();
         boolean isColourable = true;
         int target = Integer.MAX_VALUE; // Default value, represents best cost colouring found
@@ -43,7 +43,7 @@ public class SumColour {
             ArrayList<Node> domain = initialiseDomain(size, numColours);
             
             // Use target as upper bound on new colourings
-            isColourable = search(domain, colouring, target, 0); 
+            isColourable = search(domain, colouring, target, 0, 0); 
             int sum = 0;
             int coloursUsed = 0;
             for(Node n : colouring){
@@ -55,11 +55,11 @@ public class SumColour {
                 target = sum;
             colouring.clear();  // Reset stack
             if(isColourable)
-                System.out.println(sum + " cost "+ kCols+ "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
+                System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
         }
     }
     
-    public static void searchLowerBound(int size, int numColours){   
+    public static void searchLower(int size, int numColours){   
     
         Stack<Node> colouring = new Stack<Node>();
         boolean targetHit = false;
@@ -70,7 +70,7 @@ public class SumColour {
         for(int target = size; target < upperBound && !targetHit; target++){
             // Initialise domain of size k
             ArrayList<Node> domain = initialiseDomain(size, numColours);
-            targetHit = search(domain, colouring, target, 0); 
+            targetHit = search(domain, colouring, target, 0, 0); 
             
             sum = 0;
             int coloursUsed = 0;
@@ -89,7 +89,7 @@ public class SumColour {
     }
     
     
-    public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum,int sum){
+    public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum, int sum, int coloursUsed){
         if(domain.isEmpty())
             return sum < bestSum;
         
@@ -100,28 +100,40 @@ public class SumColour {
         //Node d = domain.get(0);        
         colourD:
         for(int colour : d.availableColours){
-            ArrayList<Node> newDomain = new ArrayList<Node>();
-            for(Node n : domain){
-                if(n.vertex != d.vertex)
-                    newDomain.add(n.clone());
-            }
-            for(Node n : newDomain){
-                if(adjacency[n.vertex][d.vertex]){
-                    n.availableColours.remove(Integer.valueOf(colour));
-                    if(n.availableColours.isEmpty())
-                        continue colourD;
+            //if(colour <= coloursUsed + 1){
+                ArrayList<Node> newDomain = new ArrayList<Node>();
+                for(Node n : domain){
+                    if(n.vertex != d.vertex)
+                        newDomain.add(n.clone());
                 }
-            }
-            if(search(newDomain, colouring, bestSum, sum+colour)){
-                d.colour = colour;
-                colouring.push(d);
-                return true;
-            }
+                for(Node n : newDomain){
+                    if(adjacency[n.vertex][d.vertex]){
+                        n.availableColours.remove(Integer.valueOf(colour));
+                        if(n.availableColours.isEmpty())
+                            continue colourD;
+                    }
+                }
+                //resolveAdjacency(newDomain);
+                if(colour == coloursUsed + 1)
+                    coloursUsed++;
+                if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed)){
+                    d.colour = colour;
+                    colouring.push(d);
+                    return true;
+                }
+            //}
         }
         return false;
     }
     
-
+    /*public static ArrayList<Node> cloneDomain(ArrayList<Node> domain){
+        
+        return newDomain;
+    }
+    public static void resolveAdjacency(ArrayList<Node> domain){
+        
+    }*/
+    
     
     public static Node pickNode(ArrayList<Node> domain){
         // DSATUR heuristic
@@ -143,6 +155,44 @@ public class SumColour {
             }
             if(nColours == 1)
                 break;
+        }
+        return d;
+    }
+    
+    /**
+     *  Returns cheapest cost node tiebreaking on domain size and vertex order
+    **/
+    public static Node pickCheapest(ArrayList<Node> domain){
+        Node d = domain.get(0);
+        int dOrder = d.order;
+        int dColours = d.availableColours.size();
+        int dCost = d.availableColours.get(0);
+        if(dColours == 1)
+            return d;
+        
+        for(Node n : domain){
+            int nOrder = n.order;
+            int nColours = n.availableColours.size();
+            int nCost = n.availableColours.get(0);
+            if(nColours == 1)
+                return n;
+            
+            if(nCost < dCost){
+                d = n;
+                dOrder = nOrder;
+                dColours = nColours;
+                dCost = nCost;
+            }
+            
+            // Tiebreaking on domain size and order
+            else if(nCost == dCost){
+                if(nColours < dColours || nOrder < dOrder){
+                    d = n;
+                    dOrder = nOrder;
+                    dColours = nColours;
+                    dCost = nCost;
+                }
+            }
         }
         return d;
     }
