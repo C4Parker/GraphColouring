@@ -160,28 +160,49 @@ public class SumColourConstrained {
         return d;
     }
     
-    public static Node pickDSAT(ArrayList<Node> domain){
-        // DSATUR heuristic
-        // chooses vertex with minimum available colours
-        // tiebreaking on vertex cardinality(max wins)
-        // first vertex found with only one available colour is coloured
+
+    
+    public static Node nextDeg(ArrayList<Node> domain){
         Node d = domain.get(0);
-        int dVertex = d.vertex;
-        int dColours = d.availableColours.size();
-        int maxOrder = d.order;
-        for(Node n : domain){
-            int nColours = n.availableColours.size();
-            if (nColours <= dColours){
-                if(nColours == dColours && n.order > maxOrder)
-                    maxOrder = n.order;
-                d = n;
-                dVertex = n.vertex;
-                dColours = n.availableColours.size();
-            }
-            if(nColours == 1)
-                break;
-        }
+		for(Node n : domain){
+			if(n.availableColours.size() == 1)
+				return n;
+			if(n.order > d.order)
+				d = n;
+			else if(n.order == d.order && n.availableColours.size() < d.availableColours.size())
+				d = n;
+		}
+		return d;
+	}
+    
+	
+	/**
+	 * Picks next vertex based on DSATUR heuristic, i.e on domain size tiebreaking on degree
+	**/
+	public static Node nextDSATUR(ArrayList<Node> domain){
+        Node d = domain.get(0);
+		int dSize = d.availableColours.size();
+		for(Node n : domain){
+			int nSize = n.availableColours.size();
+			if(nSize == 1)
+				return n;
+			if(nSize < dSize){
+				d = n;
+				dSize = nSize;
+			}
+			else if(nSize == dSize && n.order > d.order){
+				d = n;
+				dSize = nSize;
+			}
+		}
         return d;
+    }
+	
+	/**
+	 *  Picks next vertex arbitrarily
+	**/
+	public static Node next(ArrayList<Node> domain){
+        return domain.get(0);
     }
     
     

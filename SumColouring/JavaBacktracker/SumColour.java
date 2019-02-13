@@ -21,12 +21,17 @@ public class SumColour {
         int size = instance.size;
         
         // preliminary variables
-        int k = 7;         // Maximum number of colours to colour graph with
+        int k = 8;         // Maximum number of colours to colour graph with
         
         // search upper/lower bound sequentially
         // actual solution would be multithreaded to find bounds in less time
+<<<<<<< HEAD
         searchUpper(size, k);
         //searchLower(size, k);
+=======
+        searchUpperBound(size, k);
+        // searchLowerBound(size, k);
+>>>>>>> 1618d1645d67e620a2015d863830791f27b2a963
         
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + timeTaken(startTime));
@@ -55,7 +60,11 @@ public class SumColour {
                 target = sum;
             colouring.clear();  // Reset stack
             if(isColourable)
+<<<<<<< HEAD
                 System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
+=======
+                System.out.println(sum + " cost "+ coloursUsed+ "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
+>>>>>>> 1618d1645d67e620a2015d863830791f27b2a963
         }
     }
     

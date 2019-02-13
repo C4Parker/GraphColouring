@@ -166,7 +166,7 @@ public class Backtracker {
         return false;
     }
     
-    public static boolean searchDSATUR(ArrayList<Node> domain, Stack<String> colouring){
+    public static boolean searchDSATUR(ArrayList<Node> domain, Stack<String> colouring, int coloursUsed){
         if(domain.isEmpty())
             return true;
         
@@ -192,22 +192,26 @@ public class Backtracker {
         
        colourD:
         for(String colour : d.availableColours){
-            ArrayList<Node> newDomain = new ArrayList<Node>();
-            for(Node n : domain){
-                if(n.vertex != d.vertex)
-                    newDomain.add(n.clone());
-            }
-            for(Node n : newDomain){
-                if(adjacency[n.vertex][d.vertex]){
-                    n.availableColours.remove(colour);
-                    if(n.availableColours.isEmpty())
-                        continue colourD;
+            if(Integer.parseInt(colour) <= coloursUsed + 1){
+                if(Integer.parseInt(colour) == coloursUsed + 1)
+                    coloursUsed++;
+                ArrayList<Node> newDomain = new ArrayList<Node>();
+                for(Node n : domain){
+                    if(n.vertex != d.vertex)
+                        newDomain.add(n.clone());
                 }
-            }
-            if(searchDSATUR(newDomain, colouring)){
-                String s = "(" + d.vertex + " : " + colour + ")";
-                colouring.push(s);
-                return true;
+                for(Node n : newDomain){
+                    if(adjacency[n.vertex][d.vertex]){
+                        n.availableColours.remove(colour);
+                        if(n.availableColours.isEmpty())
+                            continue colourD;
+                    }
+                }
+                if(searchDSATUR(newDomain, colouring, coloursUsed)){
+                    String s = "(" + d.vertex + " : " + colour + ")";
+                    colouring.push(s);
+                    return true;
+                }
             }
         }
         return false;

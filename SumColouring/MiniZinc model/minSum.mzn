@@ -1,6 +1,6 @@
 include "globals.mzn";
 
-int: strength = 6; % Upper bound strength of graph
+int: strength = 7; % Upper bound strength of graph
 
 set of int: DOMAIN = 1..strength;
 
