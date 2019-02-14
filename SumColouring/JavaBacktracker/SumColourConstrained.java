@@ -11,6 +11,7 @@ public class SumColourConstrained {
     // Hacky static declaration
     static boolean adjacency[][];
     static long startTime = java.lang.System.currentTimeMillis();
+    static int nodes = 0;
     
     public static void main(String args[]) throws IOException{
         
@@ -21,7 +22,7 @@ public class SumColourConstrained {
         int size = instance.size;
         
         // preliminary variables
-        int k = 7;         // Maximum number of colours to colour graph with
+        int k = 8;         // Maximum number of colours to colour graph with
         
         // search
         search(size, k);
@@ -53,21 +54,27 @@ public class SumColourConstrained {
                 target = sum;
             colouring.clear();  // Reset stack
             if(isColourable)
-                System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
+                System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms" + "\tNodes: " + nodes);
+            nodes = 0;
         }
     }
     
     
     public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum, int sum, int coloursUsed){
+        nodes++;
         if(domain.isEmpty())
             return sum < bestSum;
-        if(domain.size() + sum >= bestSum)
+        int bestOutcome = sum;
+        for(Node n : domain){
+            bestOutcome += n.availableColours.get(0);
+        }
+        if(bestOutcome >= bestSum)
             return false;
-        Node d = pickCheapest(domain);
+        
+        Node d = nextDeg(domain);
         
         colourD:
         for(int colour : d.availableColours){
-            //if(colour <= coloursUsed + 1){
                 ArrayList<Node> newDomain = new ArrayList<Node>();
                 for(Node n : domain){
                     if(n.vertex != d.vertex)
@@ -87,44 +94,63 @@ public class SumColourConstrained {
                     colouring.push(d);
                     return true;
                 }
-            //}
         }
         return false;
     }
     
+    //
+    // Search ordering heuristics
+    //
+    
     /**
-     *
-    **/
-    public static Node pickNode(ArrayList<Node> domain){
+	 *  Picks next vertex arbitrarily
+	**/
+	public static Node next(ArrayList<Node> domain){
+        return domain.get(0);
+    }
+    
+    /**
+	 *  Picks next vertex according to DSATUR heuristic, i.e on domain size tiebreaking on degree
+	**/
+	public static Node nextDSATUR(ArrayList<Node> domain){
         Node d = domain.get(0);
-        int dOrder = d.order;
-        int dColours = d.availableColours.size();
-        if(dColours == 1){
-            return d;
-        }
-        
-        //int dColours = d.availableColours.size();
-        //int maxOrder = d.order;
-        for(Node n : domain){
-            int nOrder = n.order;
-            int nColours = n.availableColours.size();
-            if(nColours == 1){
-                d = n;
-                break;
-            }
-            // if n has larger cardinality/affected set OR n has smaller domain and same affected set n is preferable
-            if (nOrder > dOrder || (nOrder == dOrder && nColours < dColours)){
-                d = n;
-                dColours = nColours;
-            }
-        }
+		int dSize = d.availableColours.size();
+		for(Node n : domain){
+			int nSize = n.availableColours.size();
+			if(nSize == 1)
+				return n;
+			if(nSize < dSize){
+				d = n;
+				dSize = nSize;
+			}
+			else if(nSize == dSize && n.order > d.order){
+				d = n;
+				dSize = nSize;
+			}
+		}
         return d;
     }
     
     /**
-     *  Returns cheapest cost node tiebreaking on domain size and vertex order
+     *  Picks largest degree vertex tiebreaking on domain size
     **/
-    public static Node pickCheapest(ArrayList<Node> domain){
+    public static Node nextDeg(ArrayList<Node> domain){
+        Node d = domain.get(0);
+		for(Node n : domain){
+			if(n.availableColours.size() == 1)
+				return n;
+			if(n.order > d.order)
+				d = n;
+			else if(n.order == d.order && n.availableColours.size() < d.availableColours.size())
+				d = n;
+		}
+		return d;
+	}
+    
+    /**
+     *  Picks cheapest available cost vertex tiebreaking on domain size and vertex order
+    **/
+    public static Node nextCheapest(ArrayList<Node> domain){
         Node d = domain.get(0);
         int dOrder = d.order;
         int dColours = d.availableColours.size();
@@ -159,52 +185,13 @@ public class SumColourConstrained {
         
         return d;
     }
-    
 
     
-    public static Node nextDeg(ArrayList<Node> domain){
-        Node d = domain.get(0);
-		for(Node n : domain){
-			if(n.availableColours.size() == 1)
-				return n;
-			if(n.order > d.order)
-				d = n;
-			else if(n.order == d.order && n.availableColours.size() < d.availableColours.size())
-				d = n;
-		}
-		return d;
-	}
     
-	
-	/**
-	 * Picks next vertex based on DSATUR heuristic, i.e on domain size tiebreaking on degree
-	**/
-	public static Node nextDSATUR(ArrayList<Node> domain){
-        Node d = domain.get(0);
-		int dSize = d.availableColours.size();
-		for(Node n : domain){
-			int nSize = n.availableColours.size();
-			if(nSize == 1)
-				return n;
-			if(nSize < dSize){
-				d = n;
-				dSize = nSize;
-			}
-			else if(nSize == dSize && n.order > d.order){
-				d = n;
-				dSize = nSize;
-			}
-		}
-        return d;
-    }
-	
-	/**
-	 *  Picks next vertex arbitrarily
-	**/
-	public static Node next(ArrayList<Node> domain){
-        return domain.get(0);
-    }
     
+    //
+    // Domain initialisation
+    //
     
     /**
      * Initialise domain of size, with d+1 colours for vertex of degree d
