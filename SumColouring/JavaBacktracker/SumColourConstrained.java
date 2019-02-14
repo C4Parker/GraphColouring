@@ -2,9 +2,9 @@ import java.io.*;
 import java.util.*;
 
 /**
-*   Takes DIMACS file as command line argument, determines whether
-*   the graph can be coloured with k colours.
-*   Command line arguments: <DIMACS file location> <k-colours>
+*   Takes DIMACS file as command line argument, attempts to find optimal minimum sum colouring for graph.
+*   Search strategies and domain structure currently hardcoded rather than using command line arguments.
+*   Command line arguments: <DIMACS file location>
 **/
 public class SumColourConstrained {
     
@@ -21,25 +21,21 @@ public class SumColourConstrained {
         adjacency = instance.adjacencyMatrix;
         int size = instance.size;
         
-        // preliminary variables
-        int k = 8;         // Maximum number of colours to colour graph with
-        
         // search
-        search(size, k);
+        search();
         
         long endTime = java.lang.System.currentTimeMillis();
         System.out.println("Completed in " + timeTaken(startTime));
         
     }
     
-    public static void search(int size, int numColours){
+    public static void search(){
         Stack<Node> colouring = new Stack<Node>();
         boolean isColourable = true;
         int target = Integer.MAX_VALUE; // Default value, represents best cost colouring found
         
         while(isColourable){
-            // Initialise domain of size k
-            ArrayList<Node> domain = initialiseDomain(adjacency, numColours);
+            ArrayList<Node> domain = initialiseDomain(adjacency);
             
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, target, 0, 0); 
@@ -196,7 +192,7 @@ public class SumColourConstrained {
     /**
      * Initialise domain of size, with d+1 colours for vertex of degree d
     **/
-    public static ArrayList<Node> initialiseDomain(boolean[][] adjacency, int k){
+    public static ArrayList<Node> initialiseDomain(boolean[][] adjacency){
         int size = adjacency.length;
         ArrayList<Node> domain = new ArrayList<Node>(size);
         for(int i = 0; i < size; i++){
@@ -209,7 +205,7 @@ public class SumColourConstrained {
                     nOrder++;
             n.order = nOrder;
             
-            ArrayList<Integer> colours = new ArrayList<Integer>(Math.min(nOrder + 1, k));
+            ArrayList<Integer> colours = new ArrayList<Integer>(nOrder + 1);
             for(int j = 1; j <= nOrder + 1; j++)
                 colours.add(j);
             n.availableColours = colours;

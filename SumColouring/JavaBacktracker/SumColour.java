@@ -11,6 +11,7 @@ public class SumColour {
     // Hacky static declaration
     static boolean adjacency[][];
     static long startTime = java.lang.System.currentTimeMillis();
+    static int nodes = 0;
     
     public static void main(String args[]) throws IOException{
         
@@ -25,7 +26,7 @@ public class SumColour {
         
         // search upper/lower bound sequentially
         // actual solution could be multithreaded to find bounds in less time
-        searchUpperBound(size, k);
+        searchUpper(size, k);
         // searchLowerBound(size, k);
         
         long endTime = java.lang.System.currentTimeMillis();
@@ -55,7 +56,8 @@ public class SumColour {
                 target = sum;
             colouring.clear();  // Reset stack
             if(isColourable)
-                System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms");
+                System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms" + "\tNodes: " + nodes);
+            nodes = 0;
         }
     }
     
@@ -90,6 +92,7 @@ public class SumColour {
     
     
     public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum, int sum, int coloursUsed){
+        nodes++;
         if(domain.isEmpty())
             return sum < bestSum;
         
