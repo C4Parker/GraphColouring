@@ -11,7 +11,7 @@ public class SumColourConstrained {
     // Hacky static declaration
     static boolean adjacency[][];
     static long startTime = java.lang.System.currentTimeMillis();
-    static int nodes = 0;
+    static long nodes = 0;
     
     public static void main(String args[]) throws IOException{
         
@@ -67,9 +67,10 @@ public class SumColourConstrained {
         if(bestOutcome >= bestSum)
             return false;
         
-        Node d = nextDeg(domain);
+        Node d = nextDSATUR(domain);
         
         colourD:
+        
         for(int colour : d.availableColours){
                 ArrayList<Node> newDomain = new ArrayList<Node>();
                 for(Node n : domain){
@@ -90,7 +91,30 @@ public class SumColourConstrained {
                     colouring.push(d);
                     return true;
                 }
-        }
+        }/*
+        while(!d.availableColours.isEmpty()){
+            int colour = getSmallest(d.availableColours);
+            d.availableColours.remove(Integer.valueOf(colour));
+            ArrayList<Node> newDomain = new ArrayList<Node>();
+            for(Node n : domain){
+                if(n.vertex != d.vertex)
+                    newDomain.add(n.clone());
+            }
+            for(Node n : newDomain){
+                if(adjacency[n.vertex][d.vertex]){
+                    n.availableColours.remove(Integer.valueOf(colour));
+                    if(n.availableColours.isEmpty())
+                        continue colourD;
+                }
+            }
+            if(colour == coloursUsed + 1)
+                coloursUsed++;
+            if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed)){
+                d.colour = colour;
+                colouring.push(d);
+                return true;
+            }
+        }*/
         return false;
     }
     
@@ -182,7 +206,22 @@ public class SumColourConstrained {
         return d;
     }
 
+    //
+    // Value ordering heuristics
+    //
     
+    public static int getSmallest(ArrayList<Integer> domain){
+        return domain.get(0);
+    }
+    
+    public static int getLargest(ArrayList<Integer> domain){
+        return domain.get(domain.size()-1);
+    }
+    
+    public static int getRandom(ArrayList<Integer> domain){
+        Random rand = new Random();
+        return domain.get(rand.nextInt(domain.size()-1));
+    }
     
     
     //
