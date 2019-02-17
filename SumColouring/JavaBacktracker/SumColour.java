@@ -42,6 +42,8 @@ public class SumColour {
         while(isColourable){
             // Initialise domain of size k
             ArrayList<Node> domain = initialiseDomain(size, numColours);
+            pruneDegree(domain);
+            pruneAdjacent(domain, adjacency);
             
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, target, 0, 0); 
@@ -210,6 +212,39 @@ public class SumColour {
             domain.add(n);
         }
         return domain;
+    }
+    
+    /**
+     *  Rebuilds domain for all vertices such that availableColours is 1..d+1 where d is degree of vertex
+    **/
+    
+    public static void pruneDegree(ArrayList<Node> domain){
+        for(Node n : domain){
+            ArrayList<Integer> newDomain = new ArrayList<Integer>();
+            for(int i = 1; i <= n.order + 1; i++)
+                newDomain.add(i);
+            n.availableColours = newDomain;
+        }
+    }
+    
+    /**
+     *  Removes values from domain that cannot appear in optimal solution such that domain becomes
+     *      1..min(m+1) where m is maximum degree of vertex and all adjacenct vertices
+    **/
+    public static void pruneAdjacent(ArrayList<Node> domain, boolean[][] adjacency){
+        for(Node n : domain){
+            ArrayList<Integer> newDomain = new ArrayList<Integer>();
+            int maxAdjacentDegree = 0;
+            for(int i = 0; i < adjacency.length; i++){
+                if(adjacency[n.vertex][i] && domain.get(i).order > maxAdjacentDegree)
+                    maxAdjacentDegree = domain.get(i).order;
+            }
+            if(maxAdjacentDegree < n.availableColours.size()){
+                for(int i = 1; i <= maxAdjacentDegree + 1; i++)
+                    newDomain.add(i);
+                n.availableColours = newDomain;
+            }
+        }
     }
     
     public static String timeTaken(long startTime){
