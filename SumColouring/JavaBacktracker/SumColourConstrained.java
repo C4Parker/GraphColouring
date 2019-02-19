@@ -71,12 +71,12 @@ public class SumColourConstrained {
         if(bestOutcome > bestSum || (bestOutcome == bestSum && coloursUsed >= bestCol))
             return false;
         
-        Node d = nextCheapest(domain);
+        Node d = nextDSATUR(domain);
         
         colourD:
         while(!d.availableColours.isEmpty()){
             
-            int colour = getSmallest(d);
+            int colour = getLeastConflicts(d, domain);
             
             d.availableColours.remove(Integer.valueOf(colour));
             ArrayList<Node> newDomain = new ArrayList<Node>();
@@ -209,17 +209,32 @@ public class SumColourConstrained {
         Random rand = new Random();
         return n.availableColours.get(rand.nextInt(n.availableColours.size()-1));
     }
-    /*
-    public static int getLeastConflicts(Node n){
-        ArrayList<Integer> conflictCount = new ArrayList<Integer>(n.availableColours.size());
+    
+	
+    public static int getLeastConflicts(Node n, ArrayList<Node> domain){
+		int[] conflictCount = new int [n.availableColours.size()];
         
-        for(int i = 0; i < adjacency.length; i++){
-            if(adjacency[n.vertex][i])
-                for()
-        }
+		for(Node m : domain){
+			if(adjacency[m.vertex][n.vertex]){
+				for(Integer colour : m.availableColours){
+					if(n.availableColours.contains(colour))
+						conflictCount[n.availableColours.indexOf(colour)]++;
+				}
+			}
+		}
         
-        return 0;
-    }*/
+		//System.out.println(Arrays.toString(conflictCount));
+		
+		// Automatic tiebreaking favouring lower colour values due to structure 1..k
+		int leastConflictIndex = 0;
+		for(int i = 0; i < conflictCount.length; i++){
+			if(conflictCount[i] < conflictCount[leastConflictIndex])
+				leastConflictIndex = i;
+		}
+		//System.out.println(n.availableColours.size());
+		return n.availableColours.get(leastConflictIndex);
+		
+    }
     
     
     //
