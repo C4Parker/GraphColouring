@@ -1,0 +1,45 @@
+c File: instances/38_0.05_2.col
+c
+c Description: Random graph of size 38 vertices and P(0.05) of edges between any two vertices.
+p col 38 703
+e 1 32
+e 2 24
+e 2 37
+e 3 24
+e 3 35
+e 4 5
+e 4 7
+e 4 20
+e 5 13
+e 5 14
+e 5 36
+e 6 31
+e 7 29
+e 8 16
+e 8 20
+e 8 24
+e 9 25
+e 10 33
+e 11 21
+e 11 33
+e 12 15
+e 13 20
+e 13 24
+e 13 27
+e 13 30
+e 14 26
+e 16 31
+e 17 29
+e 17 32
+e 18 19
+e 18 36
+e 18 37
+e 19 24
+e 21 26
+e 22 25
+e 23 27
+e 23 37
+e 25 27
+e 27 28
+e 30 34
+e 33 37

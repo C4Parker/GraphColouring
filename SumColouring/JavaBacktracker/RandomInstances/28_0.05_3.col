@@ -1,0 +1,18 @@
+c File: instances/28_0.05_3.col
+c
+c Description: Random graph of size 28 vertices and P(0.05) of edges between any two vertices.
+p col 28 378
+e 1 4
+e 1 12
+e 1 15
+e 1 27
+e 3 12
+e 4 13
+e 4 24
+e 5 8
+e 5 19
+e 6 28
+e 12 28
+e 14 26
+e 15 22
+e 20 27

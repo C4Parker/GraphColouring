@@ -1,0 +1,7 @@
+c File: instances/18_0.05_2.col
+c
+c Description: Random graph of size 18 vertices and P(0.05) of edges between any two vertices.
+p col 18 153
+e 1 6
+e 10 15
+e 11 12

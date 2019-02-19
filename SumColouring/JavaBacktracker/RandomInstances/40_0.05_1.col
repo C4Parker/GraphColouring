@@ -1,0 +1,41 @@
+c File: instances/40_0.05_1.col
+c
+c Description: Random graph of size 40 vertices and P(0.05) of edges between any two vertices.
+p col 40 780
+e 1 27
+e 2 24
+e 2 30
+e 3 36
+e 4 6
+e 4 18
+e 4 26
+e 6 16
+e 6 22
+e 7 37
+e 8 16
+e 9 23
+e 10 18
+e 10 19
+e 10 29
+e 11 14
+e 11 39
+e 12 25
+e 12 26
+e 12 34
+e 13 16
+e 14 21
+e 14 27
+e 15 19
+e 15 21
+e 18 28
+e 18 40
+e 19 21
+e 19 28
+e 20 31
+e 20 36
+e 20 39
+e 22 34
+e 22 37
+e 25 35
+e 26 27
+e 28 30

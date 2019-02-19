@@ -1,0 +1,27 @@
+c File: instances/16_0.15_2.col
+c
+c Description: Random graph of size 16 vertices and P(0.15000000000000002) of edges between any two vertices.
+p col 16 120
+e 1 13
+e 2 9
+e 3 6
+e 3 11
+e 3 13
+e 3 16
+e 4 6
+e 4 8
+e 4 10
+e 4 14
+e 5 6
+e 5 11
+e 5 15
+e 5 16
+e 6 8
+e 6 13
+e 7 8
+e 8 10
+e 8 14
+e 9 15
+e 11 14
+e 12 16
+e 14 15

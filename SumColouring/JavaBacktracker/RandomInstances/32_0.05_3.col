@@ -1,0 +1,34 @@
+c File: instances/32_0.05_3.col
+c
+c Description: Random graph of size 32 vertices and P(0.05) of edges between any two vertices.
+p col 32 496
+e 1 13
+e 1 29
+e 3 4
+e 3 19
+e 3 30
+e 4 8
+e 4 22
+e 5 14
+e 5 20
+e 6 24
+e 6 30
+e 7 13
+e 7 15
+e 10 21
+e 10 30
+e 11 17
+e 11 30
+e 12 31
+e 13 15
+e 13 30
+e 14 19
+e 14 30
+e 16 19
+e 17 25
+e 20 31
+e 21 31
+e 22 31
+e 23 26
+e 23 30
+e 30 31

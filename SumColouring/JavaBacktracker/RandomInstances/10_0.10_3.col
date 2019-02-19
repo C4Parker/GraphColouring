@@ -1,0 +1,4 @@
+c File: instances/10_0.10_3.col
+c
+c Description: Random graph of size 10 vertices and P(0.1) of edges between any two vertices.
+p col 10 45

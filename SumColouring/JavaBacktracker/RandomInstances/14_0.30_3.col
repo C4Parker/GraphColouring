@@ -1,0 +1,26 @@
+c File: instances/14_0.30_3.col
+c
+c Description: Random graph of size 14 vertices and P(0.3) of edges between any two vertices.
+p col 14 91
+e 1 2
+e 1 4
+e 1 7
+e 1 14
+e 2 3
+e 2 8
+e 2 9
+e 2 11
+e 3 7
+e 4 8
+e 4 9
+e 4 10
+e 4 13
+e 6 8
+e 6 9
+e 6 12
+e 8 10
+e 8 11
+e 9 12
+e 11 12
+e 11 14
+e 13 14

@@ -1,0 +1,17 @@
+c File: instances/24_0.05_2.col
+c
+c Description: Random graph of size 24 vertices and P(0.05) of edges between any two vertices.
+p col 24 276
+e 1 8
+e 1 15
+e 1 18
+e 2 22
+e 3 20
+e 4 6
+e 4 23
+e 6 22
+e 7 10
+e 7 17
+e 8 13
+e 8 22
+e 18 22

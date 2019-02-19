@@ -1,0 +1,15 @@
+c File: instances/20_0.05_1.col
+c
+c Description: Random graph of size 20 vertices and P(0.05) of edges between any two vertices.
+p col 20 190
+e 1 17
+e 1 19
+e 2 19
+e 4 5
+e 4 7
+e 4 12
+e 5 16
+e 6 7
+e 6 14
+e 7 16
+e 11 17

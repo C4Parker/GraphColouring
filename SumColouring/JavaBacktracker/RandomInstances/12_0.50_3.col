@@ -1,0 +1,36 @@
+c File: instances/12_0.50_3.col
+c
+c Description: Random graph of size 12 vertices and P(0.49999999999999994) of edges between any two vertices.
+p col 12 66
+e 1 2
+e 1 4
+e 1 5
+e 1 6
+e 1 9
+e 1 12
+e 2 4
+e 2 5
+e 2 7
+e 2 8
+e 2 9
+e 2 11
+e 3 4
+e 3 6
+e 3 8
+e 3 12
+e 4 5
+e 4 10
+e 4 11
+e 5 6
+e 5 8
+e 5 10
+e 5 12
+e 6 7
+e 6 8
+e 7 9
+e 7 11
+e 7 12
+e 8 11
+e 8 12
+e 9 11
+e 10 12

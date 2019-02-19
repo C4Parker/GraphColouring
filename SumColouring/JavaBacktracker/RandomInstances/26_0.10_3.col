@@ -1,0 +1,35 @@
+c File: instances/26_0.10_3.col
+c
+c Description: Random graph of size 26 vertices and P(0.1) of edges between any two vertices.
+p col 26 325
+e 1 7
+e 2 3
+e 2 14
+e 2 19
+e 3 19
+e 4 9
+e 4 16
+e 4 20
+e 4 24
+e 5 7
+e 5 15
+e 5 21
+e 6 20
+e 6 21
+e 7 24
+e 10 20
+e 11 15
+e 11 16
+e 11 20
+e 12 15
+e 12 22
+e 12 23
+e 14 19
+e 15 19
+e 15 23
+e 17 20
+e 19 24
+e 20 24
+e 21 22
+e 21 24
+e 22 25

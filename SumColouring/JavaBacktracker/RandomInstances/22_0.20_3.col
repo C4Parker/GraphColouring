@@ -1,0 +1,42 @@
+c File: instances/22_0.20_3.col
+c
+c Description: Random graph of size 22 vertices and P(0.2) of edges between any two vertices.
+p col 22 231
+e 1 7
+e 2 3
+e 2 9
+e 2 13
+e 2 16
+e 2 20
+e 2 21
+e 3 9
+e 3 10
+e 3 12
+e 3 18
+e 3 22
+e 4 10
+e 4 11
+e 4 13
+e 4 20
+e 5 6
+e 5 7
+e 5 21
+e 6 16
+e 6 19
+e 7 11
+e 8 12
+e 9 19
+e 10 13
+e 10 14
+e 10 15
+e 10 21
+e 11 13
+e 11 14
+e 11 15
+e 12 21
+e 13 20
+e 15 17
+e 15 19
+e 17 20
+e 19 21
+e 20 21
