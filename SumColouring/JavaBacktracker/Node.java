@@ -33,4 +33,9 @@ class Node{
         return clone;
     }
     
+    @Override
+    public String toString(){
+        return "{" + vertex + ": " + availableColours.toString() + "}";
+    }
+    
 }
