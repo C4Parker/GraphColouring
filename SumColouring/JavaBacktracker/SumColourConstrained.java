@@ -32,14 +32,15 @@ public class SumColourConstrained {
     public static void search(){
         Stack<Node> colouring = new Stack<Node>();
         boolean isColourable = true;
-        int target = Integer.MAX_VALUE; // Default value, represents best cost colouring found
+        int targetSum = Integer.MAX_VALUE; // Default value, represents best cost colouring found
+        int targetColours = Integer.MAX_VALUE; // represents number of colours in best sum colouring
         
         while(isColourable){
             ArrayList<Node> domain = initialiseDomain(adjacency);
             pruneAdjacent(domain, adjacency);
             
             // Use target as upper bound on new colourings
-            isColourable = search(domain, colouring, target, 0, 0); 
+            isColourable = search(domain, colouring, targetSum, 0, 0, targetColours); 
             int sum = 0;
             int coloursUsed = 0;
             for(Node n : colouring){
@@ -47,8 +48,10 @@ public class SumColourConstrained {
                 if(n.colour > coloursUsed)
                     coloursUsed = n.colour;
             }
-            if(sum <= target)
-                target = sum;
+            if(sum <= targetSum){
+                targetSum = sum;
+                targetColours = coloursUsed;
+            }
             colouring.clear();  // Reset stack
             if(isColourable)
                 System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms" + "\tNodes: " + nodes);
@@ -57,7 +60,7 @@ public class SumColourConstrained {
     }
     
     
-    public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum, int sum, int coloursUsed){
+    public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum, int sum, int coloursUsed, int bestCol){
         nodes++;
         if(domain.isEmpty())
             return sum < bestSum;
@@ -65,36 +68,16 @@ public class SumColourConstrained {
         for(Node n : domain){
             bestOutcome += n.availableColours.get(0);
         }
-        if(bestOutcome >= bestSum)
+        if(bestOutcome > bestSum || (bestOutcome == bestSum && coloursUsed >= bestCol))
             return false;
         
-        Node d = nextDeg(domain);
+        Node d = nextCheapest(domain);
         
         colourD:
-        
-        /*for(int colour : d.availableColours){
-                ArrayList<Node> newDomain = new ArrayList<Node>();
-                for(Node n : domain){
-                    if(n.vertex != d.vertex)
-                        newDomain.add(n.clone());
-                }
-                for(Node n : newDomain){
-                    if(adjacency[n.vertex][d.vertex]){
-                        n.availableColours.remove(Integer.valueOf(colour));
-                        if(n.availableColours.isEmpty())
-                            continue colourD;
-                    }
-                }
-                if(colour == coloursUsed + 1)
-                    coloursUsed++;
-                if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed)){
-                    d.colour = colour;
-                    colouring.push(d);
-                    return true;
-                }
-        }*/
         while(!d.availableColours.isEmpty()){
-            int colour = getSmallest(d.availableColours);
+            
+            int colour = getSmallest(d);
+            
             d.availableColours.remove(Integer.valueOf(colour));
             ArrayList<Node> newDomain = new ArrayList<Node>();
             for(Node n : domain){
@@ -110,7 +93,7 @@ public class SumColourConstrained {
             }
             if(colour == coloursUsed + 1)
                 coloursUsed++;
-            if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed)){
+            if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed, bestCol)){
                 d.colour = colour;
                 colouring.push(d);
                 return true;
@@ -211,21 +194,32 @@ public class SumColourConstrained {
     // Value ordering heuristics
     //
     
-    public static int getSmallest(ArrayList<Integer> domain){
-        return domain.get(0);
+    public static int getSmallest(Node n){
+        return n.availableColours.get(0);
     }
     
-    public static int getLargest(ArrayList<Integer> domain){
-        return domain.get(domain.size()-1);
+    public static int getLargest(Node n){
+        return n.availableColours.get(n.availableColours.size()-1);
     }
     
-    public static int getRandom(ArrayList<Integer> domain){
-        if(domain.size() == 1){
-            return domain.get(0);
+    public static int getRandom(Node n){
+        if(n.availableColours.size() == 1){
+            return n.availableColours.get(0);
         }
         Random rand = new Random();
-        return domain.get(rand.nextInt(domain.size()-1));
+        return n.availableColours.get(rand.nextInt(n.availableColours.size()-1));
     }
+    /*
+    public static int getLeastConflicts(Node n){
+        ArrayList<Integer> conflictCount = new ArrayList<Integer>(n.availableColours.size());
+        
+        for(int i = 0; i < adjacency.length; i++){
+            if(adjacency[n.vertex][i])
+                for()
+        }
+        
+        return 0;
+    }*/
     
     
     //
