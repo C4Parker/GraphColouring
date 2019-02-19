@@ -76,7 +76,7 @@ public class SumColourConstrained {
         colourD:
         while(!d.availableColours.isEmpty()){
             
-            int colour = getLeastConflicts(d, domain);
+            int colour = getMostConflicts(d, domain);
             
             d.availableColours.remove(Integer.valueOf(colour));
             ArrayList<Node> newDomain = new ArrayList<Node>();
@@ -210,7 +210,9 @@ public class SumColourConstrained {
         return n.availableColours.get(rand.nextInt(n.availableColours.size()-1));
     }
     
-	
+	/**
+	 *  Gets colour that conflicts with least number of adjacenct vertices still to be coloured
+	**/
     public static int getLeastConflicts(Node n, ArrayList<Node> domain){
 		int[] conflictCount = new int [n.availableColours.size()];
         
@@ -221,19 +223,37 @@ public class SumColourConstrained {
 						conflictCount[n.availableColours.indexOf(colour)]++;
 				}
 			}
-		}
-        
-		//System.out.println(Arrays.toString(conflictCount));
-		
+		}		
 		// Automatic tiebreaking favouring lower colour values due to structure 1..k
 		int leastConflictIndex = 0;
 		for(int i = 0; i < conflictCount.length; i++){
 			if(conflictCount[i] < conflictCount[leastConflictIndex])
 				leastConflictIndex = i;
 		}
-		//System.out.println(n.availableColours.size());
 		return n.availableColours.get(leastConflictIndex);
-		
+    }
+	
+	/**
+	 *  Gets colour that conflicts with highest number of adjacenct vertices still to be coloured
+	**/
+	public static int getMostConflicts(Node n, ArrayList<Node> domain){
+		int[] conflictCount = new int [n.availableColours.size()];
+        
+		for(Node m : domain){
+			if(adjacency[m.vertex][n.vertex]){
+				for(Integer colour : m.availableColours){
+					if(n.availableColours.contains(colour))
+						conflictCount[n.availableColours.indexOf(colour)]++;
+				}
+			}
+		}		
+		// Automatic tiebreaking favouring lower colour values due to structure 1..k
+		int mostConflictIndex = 0;
+		for(int i = 0; i < conflictCount.length; i++){
+			if(conflictCount[i] > conflictCount[mostConflictIndex])
+				mostConflictIndex = i;
+		}
+		return n.availableColours.get(mostConflictIndex);
     }
     
     
