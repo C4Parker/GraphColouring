@@ -15,7 +15,6 @@ public class DIMACS2dzn {
         // Initialise default values for graph
         int size = -1;
         int adjacency[][] = new int[1][1];
-        
         // Read in data from file
         try{
         FileReader reader = new FileReader(inputFilename);
@@ -38,8 +37,6 @@ public class DIMACS2dzn {
         in.close();
         }catch(Exception ex){}
         
-        
-        
         // Remove edges connecting vertex to itself
         for(int i = 0; i < size; i++)
             adjacency[i][i] = 0;
@@ -50,6 +47,7 @@ public class DIMACS2dzn {
                 if(adjacency[i][j] == 1)
                     adjacency[j][i] = 1;
         
+        int chi = GC.findChromatic(adjacency);
         
         
         try{
@@ -71,6 +69,7 @@ public class DIMACS2dzn {
         FileWriter writer = new FileWriter(targetFilename);
         writer.write("% Data file generated from " + args[0] + " DIMACS file\n");
         writer.write("size = " + size + ";\n\n");
+        writer.write("chi = " + chi + ";\n\n");
         writer.write("adjacency = [|");
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++)
