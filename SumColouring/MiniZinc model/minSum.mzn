@@ -1,6 +1,7 @@
 include "globals.mzn";
 
-int: strength = 7; % Upper bound strength of graph
+int: strength = 15; % Upper bound strength of graph
+int: chi; % Lower bound strength of graph
 
 set of int: DOMAIN = 1..strength;
 
@@ -8,7 +9,7 @@ int: size; % Number of vertices in graph
 array[1..size,1..size] of 0..1 : adjacency;  % Adjacency matrix for graph
 
 % set of int: 1..size = 1..size;
-array[1..size] of var DOMAIN: graph; % Coloured size of graph
+array[1..size] of var DOMAIN: graph; % Coloured graph
 constraint forall(x,y in 1..size)
                  (adjacency[x,y] = 1 -> graph[x] != graph[y]);
 
@@ -29,6 +30,10 @@ constraint forall(i in 1..strength)
                  (count(graph, i, classSizes[i]));
 constraint forall(i in 1..strength-1)
                  (classSizes[i] >= classSizes[i+1]);
+
+% Redundant constraint, all colour classes less than or equal to colouring number must have some vertices with that colour
+constraint forall(i in 1..chi)(classSizes[i] >= 1);
+
                  
                  
 constraint cost >= size;
