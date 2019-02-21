@@ -34,12 +34,9 @@ constraint forall(i in 1..strength-1)
 % Redundant constraint, all colour classes less than or equal to colouring number must have some vertices with that colour
 constraint forall(i in 1..chi)(classSizes[i] >= 1);
 
-                 
-                 
-constraint cost >= size;
-%constraint cost >= maxClique*(maxClique-2)  + size;
-%constraint cost <= (maxClique/2) * size;
-%constraint class1..sizes[maxClique] >= 1;
+%constraint cost >= size;
+constraint cost >= (floor(chi*(chi+1)/2 - 1)) + (size-chi);
+constraint cost <= ceil(chi/2) * size;
 
 
 
