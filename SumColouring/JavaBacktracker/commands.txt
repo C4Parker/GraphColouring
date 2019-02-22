@@ -1,0 +1,1 @@
+find Random1020/ -name "*.col" | parallel "java SumColourConstrained {} > {}.out"
