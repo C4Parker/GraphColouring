@@ -55,6 +55,9 @@ public class SumColourConstrained {
             colouring.clear();  // Reset stack
             if(isColourable)
                 System.out.println(sum + " cost "+ coloursUsed + "-colouring found in " + (java.lang.System.currentTimeMillis()-startTime) + "ms" + "\tNodes: " + nodes);
+            if(timeOut()){
+                System.out.println("Timed out.");
+            }
             nodes = 0;
         }
     }
@@ -68,7 +71,7 @@ public class SumColourConstrained {
         for(Node n : domain){
             bestOutcome += n.availableColours.get(0);
         }
-        if(bestOutcome > bestSum || (bestOutcome == bestSum && coloursUsed >= bestCol))
+        if(bestOutcome > bestSum || (bestOutcome == bestSum && coloursUsed >= bestCol) || timeOut())
             return false;
         
         Node d = nextDSATUR(domain);
@@ -308,6 +311,9 @@ public class SumColourConstrained {
         }
     }
     
+    public static boolean timeOut(){
+        return java.lang.System.currentTimeMillis() - startTime > 1000000;
+    }
     
     public static String timeTaken(long startTime){
         return (java.lang.System.currentTimeMillis() - startTime) + "ms";
