@@ -23,7 +23,8 @@ public class SumColour {
         
         // preliminary variables
         int k = 8;         // Maximum number of colours to colour graph with
-        
+        try{k = Integer.parseInt(args[1]);}
+        catch(Exception ex){}
         // search upper/lower bound sequentially
         // actual solution could be multithreaded to find bounds in less time
         searchUpper(size, k);
@@ -42,8 +43,8 @@ public class SumColour {
         while(isColourable){
             // Initialise domain of size k
             ArrayList<Node> domain = initialiseDomain(size, numColours);
-            pruneDegree(domain);
-            pruneAdjacent(domain, adjacency);
+            //pruneDegree(domain);
+            //pruneAdjacent(domain, adjacency);
             
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, target, 0, 0); 
