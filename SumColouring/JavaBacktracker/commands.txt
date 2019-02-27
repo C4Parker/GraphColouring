@@ -1,1 +1,1 @@
-find Random1020/ -name "*.col" | parallel "java SumColourConstrained {} > {}.out"
+find RandomInstances/ -name "*.col" | parallel "java -Xmx1024m -XX:-UseSerialGC SumColourConstrained {} > {}.out"
