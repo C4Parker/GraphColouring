@@ -37,7 +37,7 @@ public class SumColourConstrained {
         
         while(isColourable){
             ArrayList<Node> domain = initialiseDomain(adjacency);
-            pruneAdjacent(domain, adjacency);
+            //pruneAdjacent(domain, adjacency);
             
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, targetSum, 0, 0, targetColours); 
@@ -71,15 +71,18 @@ public class SumColourConstrained {
         for(Node n : domain){
             bestOutcome += n.availableColours.get(0);
         }
-        if(bestOutcome > bestSum || (bestOutcome == bestSum && coloursUsed >= bestCol) || timeOut())
+        if(bestOutcome > bestSum ||  timeOut())
             return false;
         
         Node d = nextDSATUR(domain);
         
         colourD:
         while(!d.availableColours.isEmpty()){
+            int colour;
             
-            int colour = getMostConflicts(d, domain);
+            colour = getSmallest(d);
+            
+            //colour = getLargest(d);
             
             d.availableColours.remove(Integer.valueOf(colour));
             ArrayList<Node> newDomain = new ArrayList<Node>();

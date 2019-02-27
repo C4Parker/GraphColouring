@@ -22,7 +22,7 @@ public class SumColour {
         int size = instance.size;
         
         // preliminary variables
-        int k = 8;         // Maximum number of colours to colour graph with
+        int k = size;         // Maximum number of colours to colour graph with
         try{k = Integer.parseInt(args[1]);}
         catch(Exception ex){}
         // search upper/lower bound sequentially
@@ -47,7 +47,7 @@ public class SumColour {
             //pruneAdjacent(domain, adjacency);
             
             // Use target as upper bound on new colourings
-            isColourable = search(domain, colouring, target, 0, 0); 
+            isColourable = search(domain, colouring, target, 0, 0, 0); 
             int sum = 0;
             int coloursUsed = 0;
             for(Node n : colouring){
@@ -75,7 +75,7 @@ public class SumColour {
         for(int target = size; target < upperBound && !targetHit; target++){
             // Initialise domain of size k
             ArrayList<Node> domain = initialiseDomain(size, numColours);
-            targetHit = search(domain, colouring, target, 0, 0); 
+            targetHit = search(domain, colouring, target, 0, 0, 0); 
             
             sum = 0;
             int coloursUsed = 0;
@@ -94,12 +94,16 @@ public class SumColour {
     }
     
     
-    public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum, int sum, int coloursUsed){
+    public static boolean search(ArrayList<Node> domain, Stack<Node> colouring, int bestSum, int sum, int coloursUsed, int bestCol){
         nodes++;
         if(domain.isEmpty())
             return sum < bestSum;
+        int bestOutcome = sum;
+        for(Node n : domain){
+            bestOutcome += n.availableColours.get(0);
+        }
         
-        if(domain.size() + sum >= bestSum)
+        if(bestOutcome > bestSum || timeOut())
             return false;
         
         Node d = pickNode(domain);
@@ -122,7 +126,7 @@ public class SumColour {
                 //resolveAdjacency(newDomain);
                 if(colour == coloursUsed + 1)
                     coloursUsed++;
-                if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed)){
+                if(search(newDomain, colouring, bestSum, sum+colour, coloursUsed, bestCol)){
                     d.colour = colour;
                     colouring.push(d);
                     return true;
@@ -246,6 +250,10 @@ public class SumColour {
                 n.availableColours = newDomain;
             }
         }
+    }
+    
+    public static boolean timeOut(){
+        return java.lang.System.currentTimeMillis() - startTime > 1000000;
     }
     
     public static String timeTaken(long startTime){
