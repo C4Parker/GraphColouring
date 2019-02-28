@@ -74,13 +74,13 @@ public class SumColourConstrained {
         if(bestOutcome > bestSum ||  timeOut())
             return false;
         
-        Node d = nextDSATUR(domain);
+        Node d = nextDeg(domain);
         
         colourD:
         while(!d.availableColours.isEmpty()){
             int colour;
             
-            colour = getSmallest(d);
+            colour = getMCLarge(d, domain);
             
             //colour = getLargest(d);
             
@@ -218,6 +218,7 @@ public class SumColourConstrained {
     
 	/**
 	 *  Gets colour that conflicts with least number of adjacenct vertices still to be coloured
+     *      Favours smaller colour values
 	**/
     public static int getLeastConflicts(Node n, ArrayList<Node> domain){
 		int[] conflictCount = new int [n.availableColours.size()];
@@ -241,6 +242,7 @@ public class SumColourConstrained {
 	
 	/**
 	 *  Gets colour that conflicts with highest number of adjacenct vertices still to be coloured
+     *      Favours smaller colour values
 	**/
 	public static int getMostConflicts(Node n, ArrayList<Node> domain){
 		int[] conflictCount = new int [n.availableColours.size()];
@@ -257,6 +259,54 @@ public class SumColourConstrained {
 		int mostConflictIndex = 0;
 		for(int i = 0; i < conflictCount.length; i++){
 			if(conflictCount[i] > conflictCount[mostConflictIndex])
+				mostConflictIndex = i;
+		}
+		return n.availableColours.get(mostConflictIndex);
+    }
+    
+    	/**
+	 *  Gets colour that conflicts with least number of adjacenct vertices still to be coloured
+     *      Favours larger colour values
+	**/
+    public static int getLCLarge(Node n, ArrayList<Node> domain){
+		int[] conflictCount = new int [n.availableColours.size()];
+        
+		for(Node m : domain){
+			if(adjacency[m.vertex][n.vertex]){
+				for(Integer colour : m.availableColours){
+					if(n.availableColours.contains(colour))
+						conflictCount[n.availableColours.indexOf(colour)]++;
+				}
+			}
+		}		
+		// Automatic tiebreaking favouring lower colour values due to structure 1..k
+		int leastConflictIndex = 0;
+		for(int i = 0; i < conflictCount.length; i++){
+			if(conflictCount[i] <= conflictCount[leastConflictIndex])
+				leastConflictIndex = i;
+		}
+		return n.availableColours.get(leastConflictIndex);
+    }
+	
+	/**
+	 *  Gets colour that conflicts with highest number of adjacenct vertices still to be coloured
+     *      Favours larger colour values
+	**/
+	public static int getMCLarge(Node n, ArrayList<Node> domain){
+		int[] conflictCount = new int [n.availableColours.size()];
+        
+		for(Node m : domain){
+			if(adjacency[m.vertex][n.vertex]){
+				for(Integer colour : m.availableColours){
+					if(n.availableColours.contains(colour))
+						conflictCount[n.availableColours.indexOf(colour)]++;
+				}
+			}
+		}		
+		// Automatic tiebreaking favouring lower colour values due to structure 1..k
+		int mostConflictIndex = 0;
+		for(int i = 0; i < conflictCount.length; i++){
+			if(conflictCount[i] >= conflictCount[mostConflictIndex])
 				mostConflictIndex = i;
 		}
 		return n.availableColours.get(mostConflictIndex);
