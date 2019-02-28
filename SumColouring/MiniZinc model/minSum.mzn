@@ -1,6 +1,6 @@
 include "globals.mzn";
 
-int: strength = 15; % Upper bound strength of graph
+int: strength = size; % Upper bound strength of graph
 int: chi; % Lower bound strength of graph
 
 set of int: DOMAIN = 1..strength;
@@ -30,6 +30,14 @@ constraint forall(i in 1..strength)
                  (count(graph, i, classSizes[i]));
 constraint forall(i in 1..strength-1)
                  (classSizes[i] >= classSizes[i+1]);
+                 
+                 
+array[1..size, DOMAIN] of var int: inClass; % 2D array, each row represents a colour class, 1 for that vertex in class, 0 for not in that class
+                                             % Same as graph with different representation
+constraint forall(vertex in 1..size, colour in DOMAIN)(graph[vertex] == colour -> inClass[vertex,colour] = 1);
+constraint forall(vertex in 1..size, colour in DOMAIN)(graph[vertex] != colour -> inClass[vertex,colour] = 0);
+
+constraint forall(i in 1..strength-1)(classSizes[i] == classSizes[i+1] -> lex_lesseq(row(inClass,i),row(inClass,i+1)));
 
 % Redundant constraint, all colour classes less than or equal to colouring number must have some vertices with that colour
 constraint forall(i in 1..chi)(classSizes[i] >= 1);
