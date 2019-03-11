@@ -54,6 +54,7 @@ public class GC {
 
     
     public static boolean search(ArrayList<Node> domain, int coloursUsed, int[][] adjacency){
+        
         if(domain.isEmpty())
             return true;
         Node d = domain.get(0);
@@ -72,8 +73,8 @@ public class GC {
             if(nColours == 1)
                 break;
         }
-        
-       colourD:
+        // Not sure what's wrong here but symmetry isn't broken here properly so have reverted to the longer code below
+/*       colourD:
         for(Integer colour : d.availableColours){
             if(colour <= coloursUsed + 1){
                 if(colour == coloursUsed + 1)
@@ -94,7 +95,46 @@ public class GC {
                     return true;
             }
         }
+        return false;*/
+               colourD:
+        for(Integer colour : d.availableColours){
+            if(colour <= coloursUsed) {
+                ArrayList<Node> newDomain = new ArrayList<Node>();
+                for(Node n : domain){
+                    if(n.vertex != d.vertex)
+                        newDomain.add(n.clone());
+                }
+                for(Node n : newDomain){
+                    if(adjacency[n.vertex][d.vertex]==1){
+                        n.availableColours.remove(colour);
+                        if(n.availableColours.isEmpty())
+                            continue colourD;
+                    }
+                }
+                if(search(newDomain, coloursUsed, adjacency)){
+                    return true;
+                }
+            }
+            if(colour == coloursUsed + 1) {
+                ArrayList<Node> newDomain = new ArrayList<Node>();
+                for(Node n : domain){
+                    if(n.vertex != d.vertex)
+                        newDomain.add(n.clone());
+                }
+                for(Node n : newDomain){
+                    if(adjacency[n.vertex][d.vertex]==1){
+                        n.availableColours.remove(colour);
+                        if(n.availableColours.isEmpty())
+                            continue colourD;
+                    }
+                }
+                if(search(newDomain, coloursUsed + 1, adjacency)){
+                    return true;
+                }
+            }
+        }
         return false;
+        
     }
 }
 
