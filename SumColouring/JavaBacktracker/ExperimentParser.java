@@ -22,8 +22,8 @@ public class ExperimentParser {
     
     static String parseFile(String fname) throws IOException{
         String data;
-        String firstSol;
-        String finalSol;
+        String firstSol = "";
+        String finalSol = "";
         boolean timeOut = false;
         String completionTime = "";
         try{
@@ -32,7 +32,6 @@ public class ExperimentParser {
             String line = in.nextLine();
             
             firstSol = parseLine(line.split(" "));
-            
             String finalSolLine = line;
             
             while(!timeOut){
@@ -46,15 +45,12 @@ public class ExperimentParser {
                     completionTime = symbols[2].substring(0,symbols[2].length()-2);
                     break;
                 }
-                finalSolLine = line;
+                finalSol = parseLine(symbols);
             }
             
-            finalSol = parseLine(finalSolLine.split(" "));
             
         }
         catch(Exception e){
-            firstSol = "";
-            finalSol = "";
             System.out.println("exception");
         }
         data = firstSol + " " + finalSol + " " + completionTime;
