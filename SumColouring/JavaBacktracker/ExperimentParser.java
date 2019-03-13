@@ -11,13 +11,17 @@ public class ExperimentParser {
         
         //Open directory
         //Open file in directory
-        //Parse
-            //first line is first solution
-            //second last line is last solution OR
-            //third last is last solution second last is last solution
-            //last line is timeout or completion timeout
+        File folder = new File(args[0]);
+        File[] listOfFiles = folder.listFiles();
+
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                System.out.println(parseFile(file.toString()));
+    }
+}
         
-        System.out.println(parseFile(args[0]));
+        
+        //System.out.println(parseFile(args[0]));
     }
     
     static String parseFile(String fname) throws IOException{
