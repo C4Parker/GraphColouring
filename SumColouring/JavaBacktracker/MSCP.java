@@ -44,8 +44,8 @@ public class MSCP {
         int targetColours = Integer.MAX_VALUE; // represents number of colours in best sum colouring
         
         while(isColourable){
-            ArrayList<Node> domain = initialiseDomain(adjacency);
-            pruneAdjacent(domain, adjacency);
+            ArrayList<Node> domain = initialiseDomainUniform(adjacency);
+            //pruneAdjacent(domain, adjacency);
             
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, targetSum, 0, 0, targetColours); 
@@ -343,6 +343,39 @@ public class MSCP {
     //
     // Domain initialisation
     //
+    
+    /**
+     *  Initialise domain of size, with d+1 colours where d is maximum degree of any vertex in graph
+    **/
+    public static ArrayList<Node> initialiseDomainUniform(boolean[][] adjacency){
+        int size = adjacency.length;
+        int numColours = 0;
+        for(int i = 0; i < size; i++){
+            int nDegree = 0;
+            for(int j = 0; j < size; j++)
+                if(adjacency[i][j])
+                    nDegree++;
+            if(nDegree + 1 > numColours)
+                numColours = nDegree + 1;
+        }
+        ArrayList<Node> domain = new ArrayList<Node>(size);
+        for(int i = 0; i < size; i++){
+            ArrayList<Integer> colours = new ArrayList<Integer>(numColours);
+            for(int j = 0; j < numColours; j++)
+                colours.add(j+1);
+            Node n = new Node();
+            n.vertex = i;
+            int nOrder = 0;
+            for(int j = 0; j < size; j++)
+                if(adjacency[i][j])
+                    nOrder++;
+            n.order = nOrder;
+            n.availableColours = colours;
+            n.colour = null;
+            domain.add(n);
+        }
+        return domain;
+    }
     
     /**
      * Initialise domain of size, with d+1 colours for vertex of degree d
