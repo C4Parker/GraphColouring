@@ -23,16 +23,18 @@ public class MSCP {
         int size = instance.size;
         
         String outputFile = args[1];
-        writer = new FileWriter(outputFile);
-        // search
-        try{search();}
-        catch(Exception e){}
-        
-        long endTime = java.lang.System.currentTimeMillis();
-        //System.out.println("Completed in " + timeTaken(startTime));
-        writer.write("Completed in " + timeTaken(startTime));
-        writer.close();
-        
+        File out = new File(outputFile);
+        if(!out.exists()){
+            writer = new FileWriter(outputFile);
+            // search
+            try{search();}
+            catch(Exception e){}
+            
+            long endTime = java.lang.System.currentTimeMillis();
+            //System.out.println("Completed in " + timeTaken(startTime));
+            writer.write("Completed in " + timeTaken(startTime));
+            writer.close();
+        }
     }
     
     public static void search() throws IOException{
