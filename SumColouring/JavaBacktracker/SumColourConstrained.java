@@ -37,7 +37,7 @@ public class SumColourConstrained {
         
         while(isColourable){
             ArrayList<Node> domain = initialiseDomain(adjacency);
-            //pruneAdjacent(domain, adjacency);
+            pruneAdjacent(domain, adjacency);
             
             // Use target as upper bound on new colourings
             isColourable = search(domain, colouring, targetSum, 0, 0, targetColours); 
@@ -74,15 +74,19 @@ public class SumColourConstrained {
         if(bestOutcome > bestSum ||  timeOut())
             return false;
         
-        Node d = nextDeg(domain);
+        Node d;
+        
+        //d = nextDSATUR(domain);
+        
+        d = nextDSAT(domain, colouring);
         
         colourD:
         while(!d.availableColours.isEmpty()){
             int colour;
             
-            colour = getMCLarge(d, domain);
+            colour = getMostConflicts(d, domain);
             
-            //colour = getLargest(d);
+            //colour = getSmallest(d);
             
             d.availableColours.remove(Integer.valueOf(colour));
             ArrayList<Node> newDomain = new ArrayList<Node>();
@@ -120,7 +124,7 @@ public class SumColourConstrained {
     }
     
     /**
-	 *  Picks next vertex according to DSATUR heuristic, i.e on domain size tiebreaking on degree
+	 *  Picks next vertex according to DSATUR heuristic, i.e on smallest domain size tiebreaking favouring maximum degree
 	**/
 	public static Node nextDSATUR(ArrayList<Node> domain){
         Node d = domain.get(0);
@@ -142,6 +146,48 @@ public class SumColourConstrained {
     }
     
     /**
+	 *  Picks next vertex according to DSATUR heuristic, i.e on largest DSAT(v) tiebreaking favouring maximum degree
+	**/
+	public static Node nextDSAT(ArrayList<Node> domain, Stack<Node> colours){
+        Node d = domain.get(0);
+        int dDSAT = DSAT(d, colours);
+		for(Node n : domain){
+            int nDSAT = DSAT(n, colours);
+            if(nDSAT > dDSAT){
+                dDSAT = nDSAT;
+                d = n;
+            }
+            else if(nDSAT == dDSAT){
+                int dDeg = 0;
+                int nDeg = 0;
+                for(int i = 0; i < adjacency.length; i++){
+                    if(adjacency[d.vertex][i])
+                        dDeg++;
+                    if(adjacency[n.vertex][i])
+                        nDeg++;
+                }
+                if(nDeg > dDeg){
+                    d = n;
+                }
+            }
+		}
+        return d;
+    }
+    
+    public static int DSAT(Node n, Stack<Node> colours){
+        ArrayList<Integer> adjacentSet = new ArrayList<Integer>();
+        for(int i = 0; i < adjacency.length; i++){
+            if(adjacency[i][n.vertex])
+                adjacentSet.add(i);
+        }
+        ArrayList<Integer> adjColSet = new ArrayList<Integer>();
+        for(Node m : colours)
+            if(adjacentSet.contains(m.vertex) && !adjColSet.contains(m.colour))
+                adjColSet.add(m.colour);
+        return adjColSet.size();
+    }
+    
+    /**
      *  Picks largest degree vertex tiebreaking on domain size
     **/
     public static Node nextDeg(ArrayList<Node> domain){
@@ -150,6 +196,22 @@ public class SumColourConstrained {
 			if(n.availableColours.size() == 1)
 				return n;
 			if(n.order > d.order)
+				d = n;
+			else if(n.order == d.order && n.availableColours.size() < d.availableColours.size())
+				d = n;
+		}
+		return d;
+	}
+    
+        /**
+     *  Picks smallest degree vertex tiebreaking on domain size
+    **/
+    public static Node nextMinDeg(ArrayList<Node> domain){
+        Node d = domain.get(0);
+		for(Node n : domain){
+			if(n.availableColours.size() == 1)
+				return n;
+			if(n.order < d.order)
 				d = n;
 			else if(n.order == d.order && n.availableColours.size() < d.availableColours.size())
 				d = n;
@@ -264,7 +326,7 @@ public class SumColourConstrained {
 		return n.availableColours.get(mostConflictIndex);
     }
     
-    	/**
+    /**
 	 *  Gets colour that conflicts with least number of adjacenct vertices still to be coloured
      *      Favours larger colour values
 	**/
@@ -365,7 +427,7 @@ public class SumColourConstrained {
     }
     
     public static boolean timeOut(){
-        return java.lang.System.currentTimeMillis() - startTime > 1000000;
+        return java.lang.System.currentTimeMillis() - startTime > 100000000;
     }
     
     public static String timeTaken(long startTime){
