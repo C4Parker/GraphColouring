@@ -18,7 +18,7 @@ var int: cost;
 constraint cost = sum(graph);
 
 % Maximum weight of vertex is its cardinality + 1
-array[1..size] of var 1..size: vOrder;
+array[1..size] of var 0..size: vOrder;
 constraint forall(v in vOrder)
                  (sum (i in 1..size)((adjacency[v,i] = 1)) = v);
 constraint forall(v in graph)(v <= vOrder[v]+1);
